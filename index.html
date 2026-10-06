@@ -43,8 +43,7 @@ h3{font-size:17px;margin:26px 2px 10px}
 .pop{position:fixed;inset:0;background:rgba(0,0,0,.7);display:none;place-items:center;padding:20px;z-index:9}
 .pop.show{display:grid}
 .pop div{background:var(--card);border:1px solid var(--line);border-radius:26px;padding:22px;width:100%;max-width:360px;text-align:center}
-.pop svg{width:70%;height:90px}.pop h2{margin:8px 0 4px}.
- pop p{color:var(--mut);margin:0 0 16px}
+.pop svg{width:70%;height:90px}.pop h2{margin:8px 0 4px}.pop p{color:var(--mut);margin:0 0 16px}
 .pop button{width:100%;border:0;border-radius:16px;padding:15px;font:800 16px inherit;font-family:inherit;margin-top:8px}
 .b1{background:var(--ac);color:#2a1a00}.b2{background:#25272c;color:var(--tx)}.b2:disabled{opacity:.4}
 .fl{pointer-events:none;font-weight:800;color:var(--ac2);animation:up .7s ease-out forwards;z-index:11}
@@ -74,7 +73,19 @@ h3{font-size:17px;margin:26px 2px 10px}
 #engv{border-radius:24px;border:1px solid var(--line);background:radial-gradient(120% 90% at 50% 0,#2a2b30,#151618);padding:12px;margin-bottom:12px}
 .eng{width:100%;display:block}.hood{transition:transform .7s ease,opacity .7s;transform-box:fill-box;transform-origin:50% 100%}.hood.off{transform:translateY(-90px) rotate(-14deg);opacity:0}
 .glow{animation:gl 1s infinite}@keyframes gl{50%{opacity:.4}}
-#engl{white-space:pre-line}.tabs button{font-size:11.5px!important}
+#engl{white-space:pre-line}
+.tabs{gap:6px}.tabs button{position:relative;font-size:10.5px!important;line-height:1.3;padding:8px 0!important}.tabs button b{display:block;font-size:19px;line-height:1.1;font-weight:400}
+.tabs button.ping::after{content:"";position:absolute;top:5px;left:50%;margin-left:10px;width:9px;height:9px;border-radius:50%;background:#ff4d4d;border:2px solid #0f1012}
+.spin{animation:sp 6s linear infinite;transform-box:fill-box;transform-origin:50% 50%}.spin.r{animation-direction:reverse}@keyframes sp{to{transform:rotate(360deg)}}
+.whl{position:relative;width:min(86vw,320px);margin:10px auto 18px}
+.whl svg{display:block;width:100%;transition:transform 4.6s cubic-bezier(.12,.62,.08,1);filter:drop-shadow(0 6px 18px rgba(0,0,0,.5))}
+.ptr{position:absolute;left:50%;top:-10px;transform:translateX(-50%);z-index:2;width:0;height:0;border-left:13px solid transparent;border-right:13px solid transparent;border-top:28px solid var(--ac2);filter:drop-shadow(0 2px 2px rgba(0,0,0,.6))}
+.big{display:block;font-size:64px;line-height:1.3}
+.frow{display:flex;gap:8px;margin-bottom:14px}
+.frow input{flex:1;min-width:0;border:1px solid var(--line);border-radius:14px;background:var(--card);color:var(--tx);padding:13px 14px;font-family:inherit;font-size:16px;outline:0}
+.frow input:focus{border-color:var(--ac)}
+.frow button{border:0;border-radius:14px;padding:0 18px;background:var(--ac);color:#2a1a00;font-family:inherit;font-size:15px;font-weight:800}
+.row .x{margin-left:auto;border:0;background:#25272c;color:var(--mut);border-radius:10px;width:34px;height:34px;font-size:15px;flex:none}
 </style>
 </head>
 <body>
@@ -93,14 +104,25 @@ h3{font-size:17px;margin:26px 2px 10px}
  </section>
  <section id="tab-tune" class="hide">
   <h3 style="margin-top:6px">Тюнинг</h3>
-  <div class="chips"><button class="chip on" id="m-col">🎨 Цвет</button><button class="chip" id="m-eng">⚙️ Двигатель</button></div>
-  <div id="tc"><p class="hint">Выбери цвет машины</p><div class="sw" id="sw"></div></div>
+  <div class="chips" id="tchips"></div>
+  <div id="tc"><p class="hint">Выбери цвет машины. Детали — в кнопках выше: чем выше уровень, тем быстрее машина в гонке.</p><div class="sw" id="sw"></div></div>
   <div id="te" class="hide"><div id="engv"></div><p class="hint" id="engt"></p><p class="hint" id="engl"></p><button class="fix" id="engb"></button></div>
  </section>
  <section id="tab-cases" class="hide">
-  <h3 style="margin-top:6px">Кейсы с машинами</h3>
-  <p class="hint">Из кейса выпадает неисправная машина: чем выше ★, тем она реже и дороже. Её можно починить и продать или отправить в гонку.</p>
-  <div id="cases"></div>
+  <h3 style="margin-top:6px">Кейсы и бонусы</h3>
+  <button class="row star" id="daily"><div class="ic">📦</div><div><b>Ежедневный бокс</b><em id="d-daily"></em></div><div class="pr" id="p-daily"></div></button>
+  <div class="chips"><button class="chip on" id="c-cases">🎁 Кейсы</button><button class="chip" id="c-wheel">🎡 Колесо фортуны</button></div>
+  <div id="pc-cases">
+   <p class="hint">Из кейса выпадает неисправная машина: чем выше ★, тем она реже и дороже. Её можно починить и продать или отправить в гонку.</p>
+   <div id="cases"></div>
+  </div>
+  <div id="pc-wheel" class="hide">
+   <p class="hint">Здесь нет проигрыша — любой сектор это приз: валюта, боксы, машины и не только. Бесплатно раз в 3 часа или за 2 ⭐ в любой момент.</p>
+   <div class="whl"><i class="ptr"></i><svg id="wsvg" viewBox="0 0 300 300"></svg></div>
+   <button class="fix" id="wfree"></button>
+   <button class="fix sm" id="wstar">⭐ Крутить за 2 ⭐</button>
+   <p class="hint" id="wodds" style="margin-top:14px"></p>
+  </div>
  </section>
  <section id="tab-race" class="hide">
   <h3 style="margin-top:6px">Гонка</h3>
@@ -116,14 +138,29 @@ h3{font-size:17px;margin:26px 2px 10px}
   <p class="hint">Места: <b id="gcount"></b></p>
   <div class="grid" id="ggrid"></div>
  </section>
+ <section id="tab-friends" class="hide">
+  <h3 style="margin-top:6px">Друзья</h3>
+  <p class="hint" id="fme"></p>
+  <div class="frow"><input id="finp" placeholder="@ник в Telegram" maxlength="40" autocapitalize="off" autocomplete="off" autocorrect="off" spellcheck="false"><button id="fadd">Добавить</button></div>
+  <div id="flist"></div>
+  <p class="hint" id="fnote"></p>
+ </section>
 </div>
-<div class="tabs"><button id="t1" class="on">🏠 Лобби</button><button id="t2">🏁 Гонка</button><button id="t3">🛠 Тюнинг</button><button id="t4">🎁 Кейсы</button><button id="t5">🚗 Гараж</button></div>
+<div class="tabs"><button id="t1" class="on"><b>🏠</b>Лобби</button><button id="t2"><b>🏁</b>Гонка</button><button id="t3"><b>🛠</b>Тюнинг</button><button id="t4"><b>🎁</b>Кейсы</button><button id="t5"><b>🚗</b>Гараж</button><button id="t6"><b>👥</b>Друзья</button></div>
 <div class="pop" id="pop"><div>
  <div id="pcar"></div><h2 id="ptitle"></h2><p id="ptext"></p>
  <button class="b1" id="psell"></button><button class="b2" id="psave"></button>
 </div></div>
 <div class="toast" id="toast"></div>
 <script>
+/* ===== НАСТРОЙКИ СЕРВЕРА =====
+   API — адрес твоего бэкенда (бота), например 'https://garazhik.example.com'. Пока пусто — игра работает локально.
+   Бэкенд принимает POST JSON, в каждом запросе есть initData (подпись Telegram, её нужно проверить на сервере):
+   /invoice        {item:'wheel'}                 -> {link}  ссылка на счёт в Stars (createInvoiceLink, currency 'XTR', amount 2)
+   /friends/add    {username}                     -> {friend:{u,cars,sold}} или {error:'not_found'}
+   /friends/list   {me:{cars,sold}}               -> {friends:[{u,cars,sold}]}  (заодно сохраняет мою статистику)
+   /friends/remove {username}                     -> {ok:true}                                       */
+const API = '';
 const tg = window.Telegram && Telegram.WebApp;
 if (tg) { try { tg.ready(); tg.expand(); tg.setHeaderColor('#0f1012'); tg.setBackgroundColor('#0f1012'); } catch(e){} }
 const CATS = [
@@ -136,14 +173,14 @@ const CATS = [
 const CARS = [];
 CATS.forEach((k, ci) => k.c.forEach(x => CARS.push({n:x[0], t:x[1], cat:ci, hp:50*x[1], cph:2*x[1], val:300*x[1]*x[1], col:'hsl(' + (CARS.length*53 % 360) + ',55%,48%)'})));
 const W = [45, 30, 15, 6, 3.5, .5], SLOTS = 8, KEY = 'garazhik_v4';
-const def = {coins:1000, sold:0, power:1, auto:0, garage:[{id:1, car:0, prog:50, ready:true}], active:1};
+const def = {coins:2500, sold:0, power:1, auto:0, garage:[{id:1, car:0, prog:50, ready:true}], active:1, friends:[], daily:'', wheelAt:0};
 let S = JSON.parse(JSON.stringify(def));
 try {
   const now = localStorage.getItem(KEY), old = JSON.parse(localStorage.getItem('garazhik_v2') || 'null');
   if (now) Object.assign(S, JSON.parse(now));
-  else if (old) { ['coins','sold','power','auto'].forEach(k => { if (typeof old[k] === 'number') S[k] = old[k]; }); localStorage.
-   setItem(KEY, JSON.stringify(S)); }
+  else if (old) { ['coins','sold','power','auto'].forEach(k => { if (typeof old[k] === 'number') S[k] = old[k]; }); localStorage.setItem(KEY, JSON.stringify(S)); }
 } catch(e){}
+if (!Array.isArray(S.friends)) S.friends = [];
 function save(){ try { localStorage.setItem(KEY, JSON.stringify(S)); } catch(e){} }
 const $ = id => document.getElementById(id);
 const fmt = n => Math.floor(n).toLocaleString('ru-RU');
@@ -157,8 +194,16 @@ const gcol = g => g.col || CARS[g.car].col;
 const ENG = [2500, 4000, 6000, 10000], COLS = ['#e53935','#f5a623','#fdd835','#43a047','#1e88e5','#8e24aa','#ec407a','#eceff1','#212121','#00acc1'];
 const RAR = ['обычная','редкая','супер редкая','эпическая','легендарная','мифическая'], DUR = [2,5,10,18,25,30];
 const left = (g, c) => Math.max(1, Math.ceil((c.hp - g.prog) / c.hp * DUR[c.t-1]));
-function svgCar(col){
-  return <svg viewBox="0 0 120 60"><path d="M10 40 L14 28 Q16 24 22 24 L38 24 L46 12 Q48 10 52 10 L80 10 Q84 10 86 13 L94 24 L104 26 Q110 28 110 34 L110 42 Z" fill="${col}"/><path d="M50 14 L44 24 L72 24 L72 14 Z M77 14 L77 24 L90 24 L84 14 Z" fill="#0f1012" opacity=".75"/><circle cx="34" cy="44" r="10" fill="#111"/><circle cx="34" cy="44" r="4" fill="#555"/><circle cx="88" cy="44" r="10" fill="#111"/><circle cx="88" cy="44" r="4" fill="#555"/></svg>;
+const SH = [
+ {b:'M8 42 L12 31 Q14 27 20 27 L36 26 L46 14 Q48 12 53 12 L78 12 Q83 12 86 16 L92 26 L106 28 Q112 30 112 36 L112 44 L8 44Z', w:'M49 16 L43 26 H70 V16Z M75 16 V26 H88 L83 16Z', r:10, x:''},
+ {b:'M8 44 L10 26 Q12 20 18 20 L30 20 L38 10 Q40 8 45 8 L84 8 Q89 8 91 12 L96 22 L106 26 Q112 28 112 36 L112 46 L8 46Z', w:'M43 12 L36 22 H66 V12Z M71 12 V22 H92 L88 12Z', r:12, x:'<rect x="30" y="8" width="52" height="3" rx="1.5" fill="#000" opacity=".35"/>'},
+ {b:'M6 42 L8 30 Q10 26 16 26 L30 25 L40 13 Q42 11 47 11 L90 11 Q95 11 97 15 L98 26 L108 28 Q113 30 113 36 L113 44 L6 44Z', w:'M45 15 L38 25 H62 V15Z M67 15 V25 H94 L92 15Z', r:10, x:'<rect x="44" y="9" width="48" height="3" rx="1.5" fill="#000" opacity=".4"/>'},
+ {b:'M12 42 L14 30 Q16 26 22 26 L40 25 L48 13 Q50 11 55 11 L82 11 Q88 11 90 17 L94 28 Q100 30 104 31 Q110 33 110 38 L110 44 L12 44Z', w:'M51 15 L45 25 H72 V15Z M77 15 V25 H90 L86 15Z', r:10, x:''},
+ {b:'M6 42 L12 33 Q16 29 24 28 L44 25 L56 14 Q59 12 64 12 L78 12 Q82 12 85 16 L90 25 L106 29 Q113 31 113 37 L113 42 L6 42Z', w:'M58 17 L50 25 H74 V17Z M78 17 V25 H88 L84 17Z', r:9, x:'<path d="M5 28 H22 V31 H5Z" fill="#000" opacity=".6"/>'}
+];
+function svgCar(col, cat, ex){
+  const s = SH[cat] || SH[0];
+  return `<svg viewBox="0 0 120 60"><path d="${s.b}" fill="${col}"/>${s.x}<path d="${s.w}" fill="#0f1012" opacity=".78"/><path d="M8 38 H112" stroke="#000" stroke-opacity=".25" stroke-width="2"/><rect x="104" y="31" width="8" height="4" rx="2" fill="#ffe27a"/><rect x="6" y="33" width="5" height="4" rx="2" fill="#e53935"/><circle cx="34" cy="44" r="${s.r}" fill="#111"/><circle cx="34" cy="44" r="${s.r * .45}" fill="#aaa"/><circle cx="88" cy="44" r="${s.r}" fill="#111"/><circle cx="88" cy="44" r="${s.r * .45}" fill="#aaa"/>${ex || ''}</svg>`;
 }
 function toast(t){ const el = $('toast'); el.textContent = t; el.classList.add('show'); clearTimeout(toast.t); toast.t = setTimeout(() => el.classList.remove('show'), 1900); }
 function buzz(k){ try { tg.HapticFeedback.impactOccurred(k || 'light'); } catch(e){} }
@@ -202,8 +247,7 @@ function P(o){
   const a = $('psell'), b = $('psave');
   a.textContent = o.a ? o.a[0] : ''; a.onclick = o.a ? o.a[1] : null;
   b.textContent = o.b ? o.b[0] : ''; b.onclick = o.b ? o.b[1] : null; b.disabled = !!(o.b && o.b[2]);
-  a.style.display = o.
-   a ? '' : 'none'; b.style.display = o.b ? '' : 'none';
+  a.style.display = o.a ? '' : 'none'; b.style.display = o.b ? '' : 'none';
   $('pop').classList.add('show');
 }
 function closeP(){ $('pop').classList.remove('show'); save(); render(); }
@@ -213,13 +257,13 @@ function repair(n){
   if (S.coins < h * c.cph) h = Math.floor(S.coins / c.cph);
   if (h < 1) return false;
   S.coins -= h * c.cph; g.prog += h;
-  if (isDone(g) && !g.ready) { g.ready = true; buzz('heavy'); P({svg:svgCar(c.col), t:c.n + ' отремонтирована', x:'Продай или оставь для гонок.',
+  if (isDone(g) && !g.ready) { g.ready = true; buzz('heavy'); P({svg:svgCar(c.col, c.cat), t:c.n + ' отремонтирована', x:'Продай или оставь для гонок.',
     a:['Продать за ' + fmt(c.val), () => { sell(g.id); closeP(); }], b:['Оставить в гараже', () => { S.active = null; closeP(); }]}); }
   return true;
 }
 function floatText(txt, e){
   const b = $('fix').getBoundingClientRect(), el = document.createElement('div'); el.className = 'fl'; el.textContent = txt;
-  el.style.cssText = position:fixed;left:${(e && e.clientX) || b.left + b.width/2}px;top:${(e && e.clientY) || b.top}px;
+  el.style.cssText = `position:fixed;left:${(e && e.clientX) || b.left + b.width/2}px;top:${(e && e.clientY) || b.top}px`;
   document.body.appendChild(el); setTimeout(() => el.remove(), 700);
 }
 $('fix').addEventListener('click', e => {
@@ -235,21 +279,23 @@ function sell(id){
   S.coins += v; S.sold++; S.garage.splice(i, 1); if (S.active === id) S.active = null;
   toast('Продано за ' + fmt(v)); save();
 }
+function rollCar(ci){
+  let r = Math.random() * 100, t = 1; for (let i = 0; i < 6; i++) { if (r < W[i]) { t = i + 1; break; } r -= W[i]; }
+  let pool = CARS.map((c, i) => i).filter(i => CARS[i].cat === ci && CARS[i].t === t);
+  if (!pool.length) pool = CARS.map((c, i) => i).filter(i => CARS[i].cat === ci);
+  return pool[Math.floor(Math.random() * pool.length)];
+}
 function openCase(ci){
   const k = CATS[ci];
   if (S.coins < k.p) return toast('Не хватает монет');
   if (S.garage.length >= SLOTS) return toast('Гараж полон — продай машину');
   S.coins -= k.p;
-  let r = Math.random() * 100, t = 1; for (let i = 0; i < 6; i++) { if (r < W[i]) { t = i + 1; break; } r -= W[i]; }
-  let pool = CARS.map((c, i) => i).filter(i => CARS[i].cat === ci && CARS[i].t === t);
-  const all = CARS.map((c, i) => i).filter(i => CARS[i].cat === ci);
-  if (!pool.length) pool = all;
-  const idx = pool[Math.floor(Math.random() * pool.length)];
+  const all = CARS.map((c, i) => i).filter(i => CARS[i].cat === ci), idx = rollCar(ci);
   const g = {id:Date.now(), car:idx, prog:0}; S.garage.push(g); if (!cur()) S.active = g.id; save(); render(); buzz('medium');
   let n = 0; const iv = setInterval(() => {
-    P({svg:svgCar(CARS[all[Math.floor(Math.random() * all.length)]].col), t:'Открываем кейс…'});
+    P({svg:svgCar(CARS[all[Math.floor(Math.random() * all.length)]].col, ci), t:'Открываем кейс…'});
     if (++n > 12) { clearInterval(iv); const c = CARS[idx]; buzz('heavy');
-      P({svg:svgCar(c.col), t:c.n + ' ' + stars(c.t), x:'Редкость: ' + RAR[c.t-1] + '. Сама починится за ~' + DUR[c.t-1] + ' мин, после ремонта стоит ' + fmt(c.val) + '.',
+      P({svg:svgCar(c.col, c.cat), t:c.n + ' ' + stars(c.t), x:'Редкость: ' + RAR[c.t-1] + '. Сама починится за ~' + DUR[c.t-1] + ' мин, после ремонта стоит ' + fmt(c.val) + '.',
         a:['В гараж', closeP], b:['Открыть ещё за ' + fmt(k.p), () => { closeP(); openCase(ci); }, S.coins < k.p || S.garage.length >= SLOTS]}); }
   }, 100);
 }
@@ -257,16 +303,15 @@ $('cases').addEventListener('click', e => { const b = e.target.closest('[data-c]
 const R = {car:null, run:false, n:3, rs:[], fin:[], iv:0};
 const pw = (t, cond) => (.55 + .09 * t) * (.55 + .45 * cond);
 function buildLanes(rs){
-  $('lanes').innerHTML = rs.map((x, i) => `<div class="lane ${i ? '' : 'me'}"><div class="nm"><b>${i + 1}</b> ${x.n}</div><div class="cr" style="left:0">${svgCar(x.col)}<i></i></div><div class="fin"></div></div>`).join('');
+  $('lanes').innerHTML = rs.map((x, i) => `<div class="lane ${i ? '' : 'me'}"><div class="nm"><b>${i + 1}</b> ${x.n}</div><div class="cr" style="left:0">${svgCar(x.col, x.cat)}<i></i></div><div class="fin"></div></div>`).join('');
 }
 function idleLanes(){
-  const g = S.garage.find(x => x.id === R.car), rs = [{n: g ? 'Ты · ' + CARS[g.car].n : 'Твоя машина', col: g ? gcol(g) : '#555'}];
+  const g = S.garage.find(x => x.id === R.car), rs = [{n: g ? 'Ты · ' + CARS[g.car].n : 'Твоя машина', col: g ? gcol(g) : '#555', cat: g ? CARS[g.car].cat : 0}];
   for (let i = 1; i < R.n; i++) rs.push({n:'Соперник ' + i, col:'#4a4d55'});
   buildLanes(rs);
 }
 function updLanes(){
-  const order = R.rs.map((x, i) => i).
-   sort((a, b) => R.rs[b].p - R.rs[a].p), ls = $('lanes').children;
+  const order = R.rs.map((x, i) => i).sort((a, b) => R.rs[b].p - R.rs[a].p), ls = $('lanes').children;
   R.rs.forEach((x, i) => { const l = ls[i]; if (!l) return;
     l.children[1].style.left = 'calc((100% - 74px) * ' + Math.min(x.p, 100) / 100 + ')';
     const f = R.fin.indexOf(i); l.children[0].firstElementChild.textContent = (f >= 0 ? f : order.indexOf(i)) + 1; });
@@ -277,10 +322,10 @@ function startRace(){
   if (!g || !can(g)) return toast('Нужна машина с исправностью от 50%');
   const c = CARS[g.car], cond = g.prog / c.hp;
   R.run = true; R.fin = []; $('go').disabled = true; $('go').textContent = 'Заезд идёт…';
-  R.rs = [{n:'Ты · ' + c.n, col:gcol(g), pw:pw(c.t, cond) * (1 + .1 * (g.eng || 0)), p:0, l:1}];
+  R.rs = [{n:'Ты · ' + c.n, col:gcol(g), cat:c.cat, pw:pw(c.t, cond) * (1 + bonus(g)), p:0, l:1}];
   for (let i = 1; i < R.n; i++) {
     const t = Math.min(6, Math.max(1, c.t + [-1, 0, 0, 1][Math.floor(Math.random() * 4)])), pool = CARS.filter(x => x.t === t), b = pool[Math.floor(Math.random() * pool.length)];
-    R.rs.push({n:b.n, col:b.col, pw:pw(t, .75 + Math.random() * .25), p:0, l:1});
+    R.rs.push({n:b.n, col:b.col, cat:b.cat, pw:pw(t, .75 + Math.random() * .25), p:0, l:1});
   }
   buildLanes(R.rs); updLanes();
   const cd = $('cd'); let k = 3; cd.textContent = k; cd.classList.add('show'); buzz('light');
@@ -301,10 +346,10 @@ function go(g, c){
 }
 function finish(g, c){
   clearInterval(R.iv); R.run = false; $('go').disabled = false; $('go').textContent = '🏁 Старт';
-  const place = R.fin.indexOf(0) + 1, prize = Math.round((120 * c.t + 80) * (.6 + .2 * R.n) * [1, .5, .25, .1, .05][place - 1]);
+  const place = R.fin.indexOf(0) + 1, prize = Math.round((300 + 250 * c.t) * (.6 + .2 * R.n) * [1, .55, .3, .15, .1][place - 1]);
   g.prog = Math.max(0, g.prog - Math.round(c.hp * (.07 + Math.random() * .07)));
   S.coins += prize; save(); buzz('heavy');
-  P({svg:svgCar(c.col), t:['🥇','🥈','🥉','4️⃣','5️⃣'][place - 1] + ' ' + place + ' место',
+  P({svg:svgCar(gcol(g), c.cat), t:['🥇','🥈','🥉','4️⃣','5️⃣'][place - 1] + ' ' + place + ' место',
     x:R.fin.map((i, k) => (k + 1) + '. ' + R.rs[i].n).join('\n') + '\n\n+' + fmt(prize) + ' монет · исправность ' + Math.floor(g.prog / c.hp * 100) + '%',
     a:['Ок', closeP], b:['Ещё заезд', () => { closeP(); startRace(); }, !can(g)]});
   render();
@@ -321,14 +366,13 @@ $('ggrid').addEventListener('click', e => {
 function render(){
   if (!cur() && S.garage.length) S.active = S.garage[0].id;
   const g = cur(), c = g && CARS[g.car];
-  $('coins').textContent = fmt(S.coins); $('sold').textContent = S.sold;
+  $('coins').textContent = fmt(WL.spin ? WL.shown : S.coins); $('sold').textContent = S.sold;
   $('cname').innerHTML = c ? c.n + ' ' + stars(c.t) + '<span>' + (isDone(g) ? 'готова — продай или в гонку' : 'чинится сама, ещё ~' + left(g, c) + ' мин') + '</span>' : 'Нет машины в работе<span>выбери в гараже или открой кейс</span>';
   const pr = c ? Math.min(100, Math.floor(g.prog / c.hp * 100)) : 0;
   $('bar').style.width = pr + '%'; $('pct').textContent = c ? pr + '% отремонтировано' : '';
   $('auto').textContent = S.auto ? 'механики: ' + S.auto + ' ед/сек' : '';
   $('fix').disabled = !c || isDone(g);
-  $('fix').
-   textContent = '🔧 Чинить (+' + S.power + (c ? ', −' + fmt(S.power * c.cph) : '') + ')';
+  $('fix').textContent = '🔧 Чинить (+' + S.power + (c ? ', −' + fmt(S.power * c.cph) : '') + ')';
   $('d-tools').textContent = '+1 к ремонту за клик (сейчас ' + S.power + ')'; $('p-tools').textContent = fmt(toolsPrice());
   $('d-mech').textContent = 'Чинят сами: ' + S.auto + ' ед/сек'; $('p-mech').textContent = fmt(mechPrice());
   $('up-tools').classList.toggle('off', S.coins < toolsPrice()); $('up-mech').classList.toggle('off', S.coins < mechPrice());
@@ -337,13 +381,13 @@ function render(){
   const rd = S.garage.filter(can); if (!rd.find(x => x.id === R.car)) R.car = rd.length ? rd[0].id : null;
   $('rcars').innerHTML = rd.length ? rd.map(x => `<button class="chip ${x.id === R.car ? 'on' : ''}" data-r="${x.id}">${CARS[x.car].n} ${stars(CARS[x.car].t)} · ${Math.floor(x.prog / CARS[x.car].hp * 100)}%</button>`).join('') : '<span class="hint">Нет машин с исправностью от 50% — почини одну.</span>';
   const rg = S.garage.find(x => x.id === R.car), rc = rg && CARS[rg.car];
-  $('rinfo').textContent = rc ? rc.n + ' ' + stars(rc.t) + ' · ' + RAR[rc.t-1] + ' · исправность ' + Math.floor(rg.prog / rc.hp * 100) + '% · мощность ' + Math.round(pw(rc.t, rg.prog / rc.hp) * (1 + .1 * (rg.eng || 0)) * 100) : 'Выбери машину для гонки';
+  $('rinfo').textContent = rc ? rc.n + ' ' + stars(rc.t) + ' · ' + RAR[rc.t-1] + ' · исправность ' + Math.floor(rg.prog / rc.hp * 100) + '% · мощность ' + Math.round(pw(rc.t, rg.prog / rc.hp) * (1 + bonus(rg)) * 100) : 'Выбери машину для гонки';
   if (!R.run) idleLanes();
   $('gcount').textContent = S.garage.length + ' / ' + SLOTS;
   let h = S.garage.map(x => { const k = CARS[x.car], full = isDone(x), cp = x.prog / k.hp, v = Math.round(k.val * (.1 + .9 * cp));
-    return <div class="slot ${x.id === S.active ? 'act' : ''}">${svgCar(gcol(x))}<b>${k.n}</b><div class="s">${RAR[k.t-1]} · ${stars(k.t)}</div><div class="s">${Math.floor(cp * 100)}% · ${can(x) ? 'на ходу' : 'не едет'}${full ? '' : ' · ~' + left(x, k) + ' мин'}</div><div class="r">${can(x) ? `<button data-act="race" data-id="${x.id}">В гонку</button> : ''}${full ? '' : <button data-act="fix" data-id="${x.id}">Чинить</button>`}</div><div class="r"><button data-act="sell" data-id="${x.id}">${fmt(v)} 🪙</button></div></div>; }).join('');
+    return `<div class="slot ${x.id === S.active ? 'act' : ''}">${svgCar(gcol(x), k.cat)}<b>${k.n}</b><div class="s">${RAR[k.t-1]} · ${stars(k.t)}</div><div class="s">${Math.floor(cp * 100)}% · ${can(x) ? 'на ходу' : 'не едет'}${full ? '' : ' · ~' + left(x, k) + ' мин'}</div><div class="r">${can(x) ? `<button data-act="race" data-id="${x.id}">В гонку</button>` : ''}${full ? '' : `<button data-act="fix" data-id="${x.id}">Чинить</button>`}</div><div class="r"><button data-act="sell" data-id="${x.id}">${fmt(v)} 🪙</button></div></div>`; }).join('');
   for (let i = S.garage.length; i < SLOTS; i++) h += '<div class="slot empty">Свободное место</div>';
-  $('ggrid').innerHTML = h; apply3d(); tuneUI();
+  $('ggrid').innerHTML = h; apply3d(); tuneUI(); updBonus();
 }
 function engSvg(lv, col){
   return `<svg class="eng" viewBox="0 0 300 190"><rect x="10" y="10" width="280" height="170" rx="22" fill="${col}"/><rect x="30" y="22" width="240" height="30" rx="8" fill="#0f1012" opacity=".8"/><rect x="26" y="62" width="248" height="112" rx="14" fill="#111317"/>
@@ -357,47 +401,235 @@ ${lv >= 3 ? '<path d="M205 110 H224 V146 H245" stroke="#f5a623" stroke-width="6"
 ${lv >= 4 ? '<rect x="250" y="130" width="18" height="30" rx="5" fill="#ffcc66"/><path d="M100 76 H200" stroke="#ffcc66" stroke-width="4"/>' : ''}
 <g class="hood"><rect x="22" y="58" width="256" height="120" rx="16" fill="${col}" stroke="#0005" stroke-width="3"/><rect x="40" y="80" width="220" height="12" rx="6" fill="#fff" opacity=".2"/></g></svg>`;
 }
-function drawEng(){
-  const g = cur(); if (!g) return;
-  $('engv').innerHTML = engSvg(g.eng || 0, gcol(g));
-  setTimeout(() => { const h = $('engv').
-   querySelector('.hood'); if (h) h.classList.add('off'); }, 350);
+const PARTS = [
+ {k:'eng', ic:'⚙️', n:'Двигатель',        b:10, pr:[2500, 4000, 6000, 10000]},
+ {k:'whl', ic:'🛞', n:'Колёса и шины',    b:2,  pr:[800, 1500, 2500, 4000]},
+ {k:'chs', ic:'🔩', n:'Шасси и подвеска', b:2,  pr:[1000, 1800, 3000, 5000]},
+ {k:'trn', ic:'🕹️', n:'Трансмиссия',      b:2,  pr:[1200, 2200, 3500, 6000]},
+ {k:'brk', ic:'🛑', n:'Тормоза',          b:2,  pr:[600, 1200, 2000, 3200]},
+ {k:'aer', ic:'💨', n:'Аэродинамика',     b:2,  pr:[700, 1400, 2400, 3800]}
+], MAXL = 4;
+const lvl = (g, k) => k === 'eng' ? (g.eng || 0) : ((g.pt || {})[k] || 0);
+function setLvl(g, k, v){ if (k === 'eng') g.eng = v; else { g.pt = g.pt || {}; g.pt[k] = v; } }
+const bonus = g => PARTS.reduce((a, p) => a + lvl(g, p.k) * p.b / 100, 0);
+function wheelSvg(lv){
+  const rim = ['#9aa0a8','#cfd3da','#e6ebf3','#ffcc66','#ff8a1f'][lv], n = lv >= 2 ? 10 : 5, w = lv >= 2 ? 8 : 14; let sp = '';
+  for (let i = 0; i < n; i++) sp += `<rect x="${150 - w/2}" y="43" width="${w}" height="52" rx="3" fill="${rim}" transform="rotate(${i * 360 / n} 150 95)"/>`;
+  return `<svg class="eng" viewBox="0 0 300 190"><circle cx="150" cy="95" r="86" fill="#15171a" stroke="#000" stroke-width="3"/><circle cx="150" cy="95" r="${lv >= 3 ? 74 : 68}" fill="#202328"/><circle cx="150" cy="95" r="58" fill="#0b0c0e"/><circle cx="150" cy="95" r="44" fill="#5b5f68"/><circle cx="150" cy="95" r="44" fill="none" stroke="#8d939e" stroke-width="5" stroke-dasharray="3 5"/>${lv >= 1 ? '<rect x="196" y="60" width="26" height="40" rx="6" fill="#d11f2a"/>' : ''}${sp}<circle cx="150" cy="95" r="56" fill="none" stroke="${rim}" stroke-width="9"/><circle cx="150" cy="95" r="14" fill="${rim}"/><circle cx="150" cy="95" r="5" fill="#222"/>${lv >= 4 ? '<circle class="glow" cx="150" cy="95" r="62" fill="none" stroke="#ff6a00" stroke-width="3"/>' : ''}</svg>`;
 }
-let TM = 'col', curTab = 1;
+function chassisSvg(lv, col){
+  const by = 34 + [0,5,10,15,20][lv], top = by + 40, cy = 140, dc = ['#555','#2f6fe0','#2f6fe0','#d11f2a','#ffcc66'][lv];
+  const spring = x => { let d = `M${x} ${top}`; const n = 7, st = (cy - top) / n; for (let i = 1; i < n; i++) d += ` L${x + (i % 2 ? 11 : -11)} ${top + st * i}`; return `<path d="${d} L${x} ${cy}" fill="none" stroke="${lv >= 2 ? '#f5a623' : '#8b8d94'}" stroke-width="${lv >= 2 ? 6 : 4}" stroke-linejoin="round"/><line x1="${x + 24}" y1="${top}" x2="${x + 24}" y2="${cy}" stroke="${dc}" stroke-width="8" stroke-linecap="round"/>`; };
+  const wh = x => `<circle cx="${x}" cy="${cy}" r="34" fill="#111"/><circle cx="${x}" cy="${cy}" r="16" fill="#9aa0a8"/><circle cx="${x}" cy="${cy}" r="6" fill="#333"/>`;
+  return `<svg class="eng" viewBox="0 0 300 190"><rect x="0" y="176" width="300" height="3" fill="#2a2c31"/><rect x="20" y="${by}" width="260" height="40" rx="14" fill="${col}"/><rect x="40" y="${by + 8}" width="220" height="10" rx="5" fill="#0f1012" opacity=".6"/>${lv >= 4 ? `<path d="M70 ${top} L230 ${cy} M230 ${top} L70 ${cy}" stroke="#3a3d44" stroke-width="7"/>` : ''}${lv >= 3 ? `<path d="M70 ${cy} H230" stroke="#d11f2a" stroke-width="7" stroke-linecap="round"/>` : ''}${spring(62)}${spring(222)}${wh(70)}${wh(230)}</svg>`;
+}
+function gearSvg(lv){
+  const col = ['#6b6f78','#9aa0a8','#cfd3da','#ffcc66','#ff8a1f'][lv], n = [2,2,3,3,4][lv], G = [[105,100,44],[188,76,30],[214,142,26],[62,158,22]].slice(0, n);
+  return `<svg class="eng" viewBox="0 0 300 190">${G.map((q, i) => `<g class="spin${i % 2 ? ' r' : ''}"><circle cx="${q[0]}" cy="${q[1]}" r="${q[2]}" fill="none" stroke="${col}" stroke-width="10" stroke-dasharray="6 6"/><circle cx="${q[0]}" cy="${q[1]}" r="${q[2] - 5}" fill="#25272c" stroke="${col}" stroke-width="3"/><circle cx="${q[0]}" cy="${q[1]}" r="${Math.max(5, q[2] * .25)}" fill="${col}"/></g>`).join('')}${lv >= 4 ? '<circle class="glow" cx="105" cy="100" r="58" fill="none" stroke="#ff6a00" stroke-width="3"/>' : ''}</svg>`;
+}
+function brakeSvg(lv){
+  const cal = ['#5b5f68','#2f6fe0','#d11f2a','#d11f2a','#ffcc66'][lv]; let h = '';
+  if (lv >= 1) for (let i = 0; i < 16; i++) { const a = i * Math.PI / 8; h += `<circle cx="${(150 + 64 * Math.cos(a)).toFixed(1)}" cy="${(95 + 64 * Math.sin(a)).toFixed(1)}" r="4" fill="#15171a"/>`; }
+  if (lv >= 2) for (let i = 0; i < 12; i++) { const a = i * Math.PI / 6 + .26; h += `<line x1="${(150 + 40 * Math.cos(a)).toFixed(1)}" y1="${(95 + 40 * Math.sin(a)).toFixed(1)}" x2="${(150 + 54 * Math.cos(a)).toFixed(1)}" y2="${(95 + 54 * Math.sin(a)).toFixed(1)}" stroke="#15171a" stroke-width="3"/>`; }
+  return `<svg class="eng" viewBox="0 0 300 190"><circle cx="150" cy="95" r="82" fill="#8d939e" stroke="#555" stroke-width="3"/><circle cx="150" cy="95" r="36" fill="#6b6f78"/>${h}<circle cx="150" cy="95" r="24" fill="#2a2c31"/>${[0,1,2,3,4].map(i => `<circle cx="${(150 + 14 * Math.cos(i * 1.2566)).toFixed(1)}" cy="${(95 + 14 * Math.sin(i * 1.2566)).toFixed(1)}" r="3.5" fill="#ddd"/>`).join('')}<rect x="190" y="52" width="62" height="86" rx="12" fill="${cal}"/><rect x="202" y="66" width="38" height="12" rx="4" fill="#000" opacity=".25"/>${lv >= 3 ? '<text x="221" y="112" text-anchor="middle" font-size="11" font-weight="800" fill="#fff">BRAKE</text>' : ''}${lv >= 4 ? '<circle class="glow" cx="150" cy="95" r="86" fill="none" stroke="#ff4a00" stroke-width="3"/>' : ''}</svg>`;
+}
+function aeroSvg(lv, col, cat){
+  let ex = '';
+  if (lv === 1) ex += '<rect x="4" y="25" width="14" height="2.5" rx="1" fill="#111"/>';
+  if (lv >= 2) ex += '<rect x="3" y="16" width="22" height="3" rx="1.5" fill="#111"/><rect x="8" y="19" width="2" height="9" fill="#111"/><rect x="18" y="19" width="2" height="9" fill="#111"/>';
+  if (lv >= 3) ex += '<rect x="100" y="44" width="16" height="2.5" rx="1" fill="#111"/><rect x="46" y="40" width="30" height="3" rx="1.5" fill="#111"/>';
+  if (lv >= 4) ex += '<path d="M44 37 H92" stroke="#f5a623" stroke-width="1.5"/><path d="M6 44 l6 -4 h10 v4z" fill="#111"/><rect x="3" y="14.5" width="22" height="1.5" fill="#f5a623"/>';
+  return svgCar(col, cat, ex).replace('<svg ', '<svg class="eng" ');
+}
+function partView(k, lv, g){
+  const col = gcol(g);
+  return k === 'eng' ? engSvg(lv, col) : k === 'whl' ? wheelSvg(lv) : k === 'chs' ? chassisSvg(lv, col) : k === 'trn' ? gearSvg(lv) : k === 'brk' ? brakeSvg(lv) : aeroSvg(lv, col, CARS[g.car].cat);
+}
+let TM = 'col', curTab = 1, lastKey = '';
+$('tchips').innerHTML = '<button class="chip on" data-m="col">🎨 Цвет</button>' + PARTS.map(p => `<button class="chip" data-m="${p.k}">${p.ic} ${p.n}</button>`).join('');
 function setTM(m){
-  TM = m; $('m-col').classList.toggle('on', m === 'col'); $('m-eng').classList.toggle('on', m === 'eng');
-  $('tc').classList.toggle('hide', m !== 'col'); $('te').classList.toggle('hide', m !== 'eng');
-  $('stage').classList.toggle('hide', m === 'eng' && curTab === 3);
-  if (m === 'eng') drawEng();
+  TM = m; lastKey = '';
+  [...$('tchips').children].forEach(b => b.classList.toggle('on', b.dataset.m === m));
+  $('tc').classList.toggle('hide', m !== 'col'); $('te').classList.toggle('hide', m === 'col');
+  $('stage').classList.toggle('hide', m !== 'col' && curTab === 3);
+  tuneUI();
+}
+function drawPart(g, lv){
+  $('engv').innerHTML = partView(TM, lv, g);
+  if (TM === 'eng') setTimeout(() => { const h = $('engv').querySelector('.hood'); if (h) h.classList.add('off'); }, 350);
 }
 function tuneUI(){
-  const g = cur(); if (!g) return; const lv = g.eng || 0, col = gcol(g), b = $('engb');
+  const g = cur(); if (!g) return; const col = gcol(g);
   [...$('sw').children].forEach(x => x.classList.toggle('on', x.dataset.c === col));
-  $('engt').textContent = CARS[g.car].n + ' · двигатель ' + lv + ' ур. · скорость в гонке +' + lv * 10 + '%';
-  $('engl').textContent = ENG.map((p, i) => (i < lv ? '✅ ' : '▫️ ') + (i + 1) + ' ур — ' + fmt(p) + ' 🪙 · +' + (i + 1) * 10 + '%').join('\n');
-  b.disabled = lv >= 4 || S.coins < ENG[lv]; b.textContent = lv >= 4 ? 'Максимальный уровень' : 'Улучшить до ' + (lv + 1) + ' ур. · ' + fmt(ENG[lv]) + ' 🪙';
+  if (TM === 'col') return;
+  const p = PARTS.find(x => x.k === TM), lv = lvl(g, TM), b = $('engb');
+  $('engt').textContent = CARS[g.car].n + ' · ' + p.n.toLowerCase() + ' ' + lv + ' ур. · общий бонус скорости +' + Math.round(bonus(g) * 100) + '%';
+  $('engl').textContent = p.pr.map((pr, i) => (i < lv ? '✅ ' : '▫️ ') + (i + 1) + ' ур — ' + fmt(pr) + ' 🪙 · +' + (i + 1) * p.b + '%').join('\n');
+  b.disabled = lv >= MAXL || S.coins < p.pr[lv]; b.textContent = lv >= MAXL ? 'Максимальный уровень' : 'Улучшить до ' + (lv + 1) + ' ур. · ' + fmt(p.pr[lv]) + ' 🪙';
+  if (curTab === 3) { const key = g.id + ':' + TM + ':' + lv; if (key !== lastKey) { lastKey = key; drawPart(g, lv); } }
 }
 $('sw').innerHTML = COLS.map(c => `<button data-c="${c}" style="background:${c}"></button>`).join('');
 $('sw').addEventListener('click', e => { const b = e.target.closest('[data-c]'), g = cur(); if (b && g) { g.col = b.dataset.c; save(); render(); } });
-$('m-col').addEventListener('click', () => setTM('col')); $('m-eng').addEventListener('click', () => setTM('eng'));
-$('engb').addEventListener('click', () => { const g = cur(); if (!g) return; const lv = g.eng || 0;
-  if (lv >= 4 || S.coins < ENG[lv]) return; S.coins -= ENG[lv]; g.eng = lv + 1; buzz('heavy'); save(); render(); drawEng(); toast('Двигатель ' + g.eng + ' ур.'); });
+$('tchips').addEventListener('click', e => { const b = e.target.closest('[data-m]'); if (b) setTM(b.dataset.m); });
+$('engb').addEventListener('click', () => {
+  const g = cur(); if (!g || TM === 'col') return; const p = PARTS.find(x => x.k === TM), lv = lvl(g, TM);
+  if (lv >= MAXL || S.coins < p.pr[lv]) return;
+  S.coins -= p.pr[lv]; setLvl(g, TM, lv + 1); buzz('heavy'); save(); render(); toast(p.n + ': ' + (lv + 1) + ' ур.');
+});
 $('lgo').addEventListener('click', () => { const g = cur(); if (g && can(g)) R.car = g.id; tab(2); });
 function tab(n){
   curTab = n;
-  ['tab-fix','tab-race','tab-tune','tab-cases','tab-garage'].forEach((id, i) => { $(id).classList.toggle('hide', i + 1 !== n); $('t' + (i + 1)).classList.toggle('on', i + 1 === n); });
+  ['tab-fix','tab-race','tab-tune','tab-cases','tab-garage','tab-friends'].forEach((id, i) => { $(id).classList.toggle('hide', i + 1 !== n); $('t' + (i + 1)).classList.toggle('on', i + 1 === n); });
   $('stage').classList.remove('hide');
   if (n === 1 || n === 3) $(n === 1 ? 'tab-fix' : 'tab-tune').prepend($('stage'));
   if (n === 3) setTM(TM);
+  if (n === 6) { drawFriends(); refreshFriends(); }
   window.scrollTo(0, 0);
 }
-[1,2,3,4,5].forEach(n => $('t' + n).addEventListener('click', () => tab(n)));
+[1,2,3,4,5,6].forEach(n => $('t' + n).addEventListener('click', () => tab(n)));
+
+/* ===== Сервер / Stars ===== */
+async function api(path, body){
+  if (!API) return null;
+  try {
+    const r = await fetch(API + path, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(Object.assign({initData: tg ? tg.initData : ''}, body || {}))});
+    return await r.json();
+  } catch(e){ return null; }
+}
+async function payStars(item){
+  if (tg && tg.initData) {
+    if (!API) { toast('Оплата Stars ещё не подключена к серверу'); return false; }
+    const j = await api('/invoice', {item});
+    if (!j || !j.link) { toast('Не удалось открыть оплату'); return false; }
+    return await new Promise(res => tg.openInvoice(j.link, st => res(st === 'paid')));
+  }
+  return confirm('Тестовый режим (вне Telegram): имитировать оплату 2 ⭐?');
+}
+
+/* ===== Ежедневный бокс и колесо фортуны ===== */
+const WL = {spin:false, pay:false, rot:0, shown:0}, WH = 3 * 3600 * 1000;
+const dayKey = () => { const d = new Date(); return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate(); };
+const msToMidnight = () => { const d = new Date(); return new Date(d.getFullYear(), d.getMonth(), d.getDate() + 1) - d; };
+const hms = ms => { const t = Math.max(0, Math.ceil(ms / 1000)), p = n => String(n).padStart(2, '0'); return p(Math.floor(t / 3600)) + ':' + p(Math.floor(t % 3600 / 60)) + ':' + p(t % 60); };
+const boxSum = () => Math.round((200 + 4800 * Math.pow(Math.random(), 1.8)) / 10) * 10;
+const big = e => '<span class="big">' + e + '</span>';
+const WS = [
+ {ic:'🪙', t:'500',    w:24, k:'coins', v:500},
+ {ic:'📦', t:'Бокс',   w:16, k:'box'},
+ {ic:'🪙', t:'1 500',  w:14, k:'coins', v:1500},
+ {ic:'🎁', t:'Кейс',   w:12, k:'case'},
+ {ic:'🚗', t:'Машина', w:13, k:'car', tiers:[1,2]},
+ {ic:'🔧', t:'Ремонт', w:10, k:'repair'},
+ {ic:'💰', t:'5 000',  w:8,  k:'coins', v:5000},
+ {ic:'🏎️', t:'Редкая', w:3,  k:'car', tiers:[3,4]}
+];
+function buildWheel(){
+  let h = '';
+  WS.forEach((s, i) => {
+    const p = a => (150 + 140 * Math.sin(a)).toFixed(1) + ',' + (150 - 140 * Math.cos(a)).toFixed(1), a1 = (i * 45 - 22.5) * Math.PI / 180, a2 = (i * 45 + 22.5) * Math.PI / 180;
+    h += `<path d="M150,150 L${p(a1)} A140,140 0 0 1 ${p(a2)} Z" fill="${s.k === 'car' && s.tiers[0] > 2 ? '#6b4a10' : i % 2 ? '#30333a' : '#24262b'}" stroke="#0f1012" stroke-width="3"/>`;
+    h += `<g transform="rotate(${i * 45} 150 150)"><text x="150" y="50" text-anchor="middle" font-size="26">${s.ic}</text><text x="150" y="82" text-anchor="middle" font-size="12" font-weight="800" fill="#f3f1ec">${s.t}</text></g>`;
+  });
+  $('wsvg').innerHTML = h + '<circle cx="150" cy="150" r="140" fill="none" stroke="#f5a623" stroke-width="6"/><circle cx="150" cy="150" r="22" fill="#0f1012" stroke="#f5a623" stroke-width="4"/>';
+  $('wodds').textContent = 'Шансы: ' + WS.map(s => s.ic + ' ' + (s.k === 'car' ? (s.tiers[0] > 2 ? 'редкая машина' : 'машина') : s.t) + ' — ' + s.w + '%').join(' · ');
+}
+function giveCar(idx){
+  const g = {id:Date.now() + Math.floor(Math.random() * 1000), car:idx, prog:0}; S.garage.push(g); if (!cur()) S.active = g.id;
+  const c = CARS[idx]; return {svg:svgCar(c.col, c.cat), t:c.n + ' ' + stars(c.t), x:'Редкость: ' + RAR[c.t-1] + '. Машина неисправна — сама починится за ~' + DUR[c.t-1] + ' мин.'};
+}
+function award(s){
+  const full = S.garage.length >= SLOTS;
+  if (s.k === 'coins') { S.coins += s.v; return {svg:big('🪙'), t:'+' + fmt(s.v) + ' монет', x:'Монеты уже на счету.'}; }
+  if (s.k === 'box') { const v = boxSum(); S.coins += v; return {svg:big('📦'), t:'Бокс: +' + fmt(v) + ' монет', x:'В боксе может быть от 200 до 5 000 монет.'}; }
+  if (s.k === 'repair') {
+    const g = (cur() && !isDone(cur())) ? cur() : S.garage.find(x => !isDone(x));
+    if (g) { const c = CARS[g.car]; g.prog = c.hp; g.ready = true; return {svg:svgCar(gcol(g), c.cat), t:'Мгновенный ремонт', x:c.n + ' полностью отремонтирована — можно продавать или гонять.'}; }
+    S.coins += 700; return {svg:big('🔧'), t:'+700 монет', x:'Все машины уже на ходу, поэтому вместо ремонта — монеты.'};
+  }
+  if (s.k === 'case') {
+    const ci = Math.floor(Math.random() * CATS.length);
+    if (full) { S.coins += 600; return {svg:big('🎁'), t:'+600 монет', x:'Гараж полон — вместо кейса «' + CATS[ci].n + '» получи монеты.'}; }
+    const r = giveCar(rollCar(ci)); r.t = 'Кейс «' + CATS[ci].n + '»: ' + r.t; return r;
+  }
+  const pool = CARS.map((c, i) => i).filter(i => s.tiers.includes(CARS[i].t)), idx = pool[Math.floor(Math.random() * pool.length)];
+  if (full) { const v = Math.round(CARS[idx].val * .5); S.coins += v; return {svg:big('🚗'), t:'+' + fmt(v) + ' монет', x:'Гараж полон — вместо машины ' + CARS[idx].n + ' получи монеты.'}; }
+  return giveCar(idx);
+}
+function doSpin(paid){
+  if (WL.spin) return;
+  let r = Math.random() * 100, i = 0; for (; i < WS.length - 1; i++) { if (r < WS[i].w) break; r -= WS[i].w; }
+  WL.shown = S.coins; WL.spin = true;
+  if (!paid) S.wheelAt = Date.now();
+  const res = award(WS[i]); save();
+  const want = ((360 - i * 45 + (Math.random() - .5) * 28) % 360 + 360) % 360;
+  WL.rot += ((want - WL.rot) % 360 + 360) % 360 + 360 * 5;
+  $('wsvg').style.transform = 'rotate(' + WL.rot + 'deg)'; buzz('medium'); updBonus();
+  setTimeout(() => { WL.spin = false; buzz('heavy'); render(); P({svg:res.svg, t:res.t, x:res.x, a:['Забрать', closeP]}); }, 4700);
+}
+function updBonus(){
+  const dReady = S.daily !== dayKey(), wl = WH - (Date.now() - (S.wheelAt || 0)), wr = wl <= 0;
+  $('d-daily').textContent = dReady ? 'Забери бесплатно: от 200 до 5 000 монет' : 'Следующий через ' + hms(msToMidnight());
+  $('p-daily').textContent = dReady ? 'Забрать' : '✓'; $('daily').classList.toggle('off', !dReady);
+  $('wfree').textContent = WL.spin ? 'Крутится…' : wr ? '🎡 Крутить бесплатно' : 'Бесплатно через ' + hms(wl);
+  $('wfree').disabled = WL.spin || !wr; $('wstar').disabled = WL.spin || WL.pay;
+  $('t4').classList.toggle('ping', dReady || wr);
+}
+$('daily').addEventListener('click', () => {
+  if (S.daily === dayKey()) return toast('Бокс уже открыт — приходи завтра');
+  const v = boxSum(); S.daily = dayKey(); S.coins += v; save(); buzz('medium'); render();
+  P({svg:big('📦'), t:'Открываем бокс…'});
+  setTimeout(() => { buzz('heavy'); P({svg:big('📦'), t:'+' + fmt(v) + ' монет', x:'Ежедневный бокс. Следующий — завтра.', a:['Забрать', closeP]}); }, 900);
+});
+$('wfree').addEventListener('click', () => { if (Date.now() - (S.wheelAt || 0) >= WH) doSpin(false); });
+$('wstar').addEventListener('click', async () => {
+  if (WL.spin || WL.pay) return; WL.pay = true; updBonus();
+  const ok = await payStars('wheel'); WL.pay = false; updBonus(); if (ok) doSpin(true);
+});
+function showSub(w){ $('c-cases').classList.toggle('on', !w); $('c-wheel').classList.toggle('on', w); $('pc-cases').classList.toggle('hide', w); $('pc-wheel').classList.toggle('hide', !w); }
+$('c-cases').addEventListener('click', () => showSub(false)); $('c-wheel').addEventListener('click', () => showSub(true));
+buildWheel();
+
+/* ===== Друзья (по нику Telegram) ===== */
+const me = (tg && tg.initDataUnsafe && tg.initDataUnsafe.user && tg.initDataUnsafe.user.username) || '';
+const esc = t => String(t).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function drawFriends(){
+  $('fme').textContent = me ? 'Твой ник: @' + me + ' — друг может добавить тебя по нему.' : 'Твой ник не определён: задай username в настройках Telegram, чтобы друзья могли найти тебя.';
+  $('fnote').textContent = API ? '' : 'Сервер ещё не подключён: друзья пока сохраняются только на этом устройстве, их прогресс появится после подключения.';
+  $('flist').innerHTML = S.friends.length ? S.friends.map(f => `<div class="row"><div class="ic">${esc(f.u[0].toUpperCase())}</div><div><b>@${esc(f.u)}</b><em>${f.ok ? '🚗 ' + (f.cars || 0) + ' · продано ' + (f.sold || 0) : 'сохранён на этом устройстве'}</em></div><button class="x" data-fd="${esc(f.u)}">✕</button></div>`).join('') : '<p class="hint">Пока никого. Введи ник друга из Telegram.</p>';
+}
+async function refreshFriends(){
+  const r = await api('/friends/list', {me:{cars:S.garage.length, sold:S.sold}});
+  if (r && Array.isArray(r.friends)) { S.friends = r.friends.map(f => ({u:String(f.u), cars:f.cars, sold:f.sold, ok:true})); save(); drawFriends(); }
+}
+let addBusy = false;
+async function addFriend(){
+  if (addBusy) return;
+  const u = $('finp').value.trim().replace(/^(https?:\/\/)?t\.me\//i, '').replace(/^@/, '');
+  if (!/^[A-Za-z][A-Za-z0-9_]{4,31}$/.test(u)) return toast('Ник: 5–32 символа, латиница, цифры и _');
+  if (me && u.toLowerCase() === me.toLowerCase()) return toast('Это твой ник');
+  if (S.friends.some(f => f.u.toLowerCase() === u.toLowerCase())) return toast('Уже в друзьях');
+  if (S.friends.length >= 50) return toast('Максимум 50 друзей');
+  let f = {u, ok:false};
+  if (API) {
+    addBusy = true; const r = await api('/friends/add', {username:u}); addBusy = false;
+    if (!r) return toast('Не удалось связаться с сервером');
+    if (r.error) return toast(r.error === 'not_found' ? 'Такого игрока нет в игре' : 'Ошибка: ' + r.error);
+    f = Object.assign(f, r.friend || {}, {ok:true});
+  }
+  S.friends.push(f); $('finp').value = ''; save(); drawFriends(); buzz('light'); toast('@' + u + ' добавлен');
+}
+$('fadd').addEventListener('click', addFriend);
+$('finp').addEventListener('keydown', e => { if (e.key === 'Enter') addFriend(); });
+$('flist').addEventListener('click', e => {
+  const b = e.target.closest('[data-fd]'); if (!b) return; const u = b.dataset.fd;
+  S.friends = S.friends.filter(f => f.u !== u); save(); drawFriends(); api('/friends/remove', {username:u});
+});
 function tickAuto(){
   const now = Date.now(), dt = Math.min((now - (S.last || now)) / 1000, 21600); S.last = now;
   S.garage.forEach(g => { if (isDone(g)) return; const c = CARS[g.car];
     g.prog = Math.min(c.hp, g.prog + c.hp / (DUR[c.t-1] * 60) * dt);
     if (isDone(g) && !g.ready) { g.ready = true; buzz('heavy');
-      if (g.id === S.active) P({svg:svgCar(c.col), t:c.n + ' починилась', x:'Продай или оставь для гонок.',
+      if (g.id === S.active) P({svg:svgCar(c.col, c.cat), t:c.n + ' починилась', x:'Продай или оставь для гонок.',
         a:['Продать за ' + fmt(c.val), () => { sell(g.id); closeP(); }], b:['Оставить в гараже', () => { S.active = null; closeP(); }]});
       else toast(c.n + ' починилась'); } });
   save(); render();
