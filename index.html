@@ -2,18 +2,17 @@
 <html lang="ru">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Гаражик</title>
-<script src="https://telegram.org/js/telegram-web-app.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <style>
-:root{--bg:#0f1012;--card:#1a1b1e;--line:#2a2c31;--tx:#f3f1ec;--mut:#8b8d94;--ac:#f5a623;--ac2:#ffcc66;--ok:#3ecf8e}
+:root{--bg:#0f1012;--card:#1a1b1e;--line:#2a2c31;--tx:#f3f1ec;--mut:#8b8d94;--ac:#f5a623;--ac2:#ffcc66;--ok:#3ecf8e;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px)}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;background:var(--bg);color:var(--tx);font-family:-apple-system,"SF Pro Rounded",system-ui,Roboto,sans-serif}
+html,body{margin:0;background:var(--bg);color:var(--tx);font-family:-apple-system,system-ui,Roboto,sans-serif}
 #app{max-width:520px;margin:0 auto;padding:14px 14px 96px}
 .top{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:12px}
 .coins{font-size:46px;font-weight:800;line-height:1;letter-spacing:-1px}
-.coins small{font-size:15px;font-weight:600;color:var(--ac);margin-left:6px;letter-spacing:0}
+.coins small{font-size:15px;font-weight:600;color:var(--ac);margin-left:6px}
 .sold{color:var(--mut);font-size:14px;padding-bottom:4px}
 .stage{position:relative;border-radius:24px;border:1px solid var(--line);background:radial-gradient(120% 90% at 50% 0,#2a2b30,#151618);overflow:hidden}
 #cv{display:block;width:100%;height:240px}
@@ -22,108 +21,128 @@ html,body{margin:0;background:var(--bg);color:var(--tx);font-family:-apple-syste
 .bar{height:14px;border-radius:9px;background:var(--card);margin:14px 0 6px;overflow:hidden}
 .bar i{display:block;height:100%;width:0;border-radius:9px;background:linear-gradient(90deg,#e08a00,var(--ac2));transition:width .15s}
 .pct{display:flex;justify-content:space-between;color:var(--mut);font-size:12px;margin-bottom:12px}
-.fix{width:100%;border:0;border-radius:20px;padding:20px;font-size:21px;font-weight:800;color:#2a1a00;background:linear-gradient(180deg,var(--ac2),var(--ac));box-shadow:0 6px 0 #b46f00;position:relative;transition:transform .06s,box-shadow .06s;touch-action:manipulation}
+.fix{width:100%;border:0;border-radius:20px;padding:20px;font-size:21px;font-weight:800;color:#2a1a00;background:linear-gradient(180deg,var(--ac2),var(--ac));box-shadow:0 6px 0 #b46f00;transition:transform .06s,box-shadow .06s;touch-action:manipulation}
 .fix:active{transform:translateY(5px);box-shadow:0 1px 0 #b46f00}
+.fix:disabled{opacity:.45}
 h3{font-size:17px;margin:26px 2px 10px}
 .row{display:flex;align-items:center;gap:12px;width:100%;text-align:left;color:var(--tx);background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px;margin-bottom:10px;font:inherit}
 .row .ic{font-size:26px;width:44px;height:44px;border-radius:14px;background:#25272c;display:grid;place-items:center;flex:none}
-.row b{display:block;font-size:16px}.row em{font-style:normal;color:var(--mut);font-size:13px}
+.row b{display:block;font-size:16px}.row em{display:block;margin-top:2px;font-style:normal;color:var(--mut);font-size:13px}
 .row .pr{margin-left:auto;font-weight:800;font-size:17px;color:var(--ac2);white-space:nowrap}
-.row.off{opacity:.45}
-.row.star .pr{color:var(--ok)}
+.row.off{opacity:.45}.row.star .pr{color:var(--ok)}
 .tabs{position:fixed;left:0;right:0;bottom:0;display:flex;gap:8px;justify-content:center;padding:10px 14px calc(10px + env(safe-area-inset-bottom,0px));background:rgba(15,16,18,.9);backdrop-filter:blur(14px);border-top:1px solid var(--line)}
-.tabs button{flex:1;max-width:240px;border:0;border-radius:16px;padding:13px;font:700 15px inherit;font-family:inherit;color:var(--mut);background:var(--card)}
+.tabs button{flex:1;border:0;border-radius:16px;padding:12px 2px;font:700 13px inherit;font-family:inherit;color:var(--mut);background:var(--card)}
 .tabs button.on{color:#2a1a00;background:var(--ac)}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .slot{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:12px;text-align:center}
 .slot.empty{border-style:dashed;color:var(--mut);display:grid;place-items:center;min-height:150px;font-size:13px}
-.slot svg{width:100%;height:64px}
-.slot b{display:block;margin-top:6px}
+.slot svg{width:100%;height:64px}.slot b{display:block;margin-top:6px}
 .slot button{margin-top:8px;width:100%;border:0;border-radius:12px;padding:9px;background:#25272c;color:var(--tx);font:600 13px inherit;font-family:inherit}
+.slot .s{color:var(--mut);font-size:12px}.slot .r{display:flex;gap:6px}.slot.act{border-color:var(--ac)}
 .hint{color:var(--mut);font-size:13px;margin:0 2px 12px}
 .pop{position:fixed;inset:0;background:rgba(0,0,0,.7);display:none;place-items:center;padding:20px;z-index:9}
 .pop.show{display:grid}
 .pop div{background:var(--card);border:1px solid var(--line);border-radius:26px;padding:22px;width:100%;max-width:360px;text-align:center}
-.pop svg{width:70%;height:90px}
-.pop h2{margin:8px 0 4px}.pop p{color:var(--mut);margin:0 0 16px}
+.pop svg{width:70%;height:90px}.pop h2{margin:8px 0 4px}.
+ pop p{color:var(--mut);margin:0 0 16px}
 .pop button{width:100%;border:0;border-radius:16px;padding:15px;font:800 16px inherit;font-family:inherit;margin-top:8px}
 .b1{background:var(--ac);color:#2a1a00}.b2{background:#25272c;color:var(--tx)}.b2:disabled{opacity:.4}
-.fl{position:absolute;pointer-events:none;font-weight:800;color:#2a1a00;animation:up .7s ease-out forwards}
+.fl{pointer-events:none;font-weight:800;color:var(--ac2);animation:up .7s ease-out forwards;z-index:11}
 @keyframes up{to{transform:translateY(-60px);opacity:0}}
 .toast{position:fixed;left:50%;top:calc(14px + env(safe-area-inset-top,0px));transform:translate(-50%,-90px);background:#2b2d33;border:1px solid var(--line);padding:10px 16px;border-radius:14px;font-size:14px;transition:transform .25s;z-index:10}
 .toast.show{transform:translate(-50%,0)}
 .hide{display:none}
 .chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}.chip{padding:9px 12px;border-radius:12px;background:var(--card);border:1px solid var(--line);font-size:13px;color:var(--tx);font-family:inherit}.chip.on{border-color:var(--ac);color:var(--ac2)}
 .ln{display:flex;align-items:center;gap:10px;margin-bottom:6px;font-size:13px;color:var(--mut)}.ln span{width:52px}.ln .bar{flex:1;margin:0;height:12px}.ln .bar i{transition:none}
-.slot .s{color:var(--mut);font-size:12px}.slot .r{display:flex;gap:6px}.slot.act{border-color:var(--ac)}
-.tabs button{font-size:13px;font-weight:700;padding:12px 2px;max-width:none;font-family:inherit}.slot button{font-size:13px;font-weight:600}.pop button{font-size:16px;font-weight:800}.fix:disabled{opacity:.45}
-.row em{display:block;margin-top:2px}
+
+.trk{position:relative;border-radius:20px;border:1px solid var(--line);background:#17181b;overflow:hidden;margin-bottom:12px}
+.lane{position:relative;height:56px;border-bottom:1px solid #26282d;overflow:hidden}.lane:last-child{border:0}
+.lane.me{background:linear-gradient(90deg,rgba(245,166,35,.14),transparent)}
+.lane::before{content:"";position:absolute;left:0;right:0;top:48px;height:3px;background:repeating-linear-gradient(90deg,#3a3d44 0 22px,transparent 22px 44px)}
+.lane.run::before{animation:rd .3s linear infinite}
+@keyframes rd{to{background-position:-44px 0}}
+.nm{position:absolute;left:8px;top:2px;font-size:11px;color:var(--mut);z-index:1;white-space:nowrap}.nm b{color:var(--ac2);font-size:12px;margin-right:2px}
+.cr{position:absolute;top:15px;width:62px;height:31px}.cr svg{width:100%;height:100%;display:block}
+.cr i{position:absolute;right:100%;top:11px;width:0;height:7px;border-radius:7px 0 0 7px;background:linear-gradient(270deg,rgba(255,204,102,.9),transparent);transition:width .25s}
+.run .cr i{width:36px}
+.fin{position:absolute;right:0;top:0;bottom:0;width:12px;background:repeating-conic-gradient(#f3f1ec 0 25%,#222 0 50%) 0 0/8px 8px}
+.cd{position:absolute;inset:0;display:none;place-items:center;font-size:72px;font-weight:900;color:var(--ac2);background:rgba(0,0,0,.5);z-index:5}.cd.show{display:grid}
+.pop p{white-space:pre-line}
+
+.fix.sm{padding:12px;font-size:15px;margin-top:12px;background:#25272c;color:var(--tx);box-shadow:0 4px 0 #111}.fix.sm:active{box-shadow:0 1px 0 #111}
+.sw{display:flex;gap:10px;flex-wrap:wrap;margin:6px 0 14px}.sw button{width:44px;height:44px;border-radius:50%;border:3px solid var(--line)}.sw button.on{border-color:#fff}
+#engv{border-radius:24px;border:1px solid var(--line);background:radial-gradient(120% 90% at 50% 0,#2a2b30,#151618);padding:12px;margin-bottom:12px}
+.eng{width:100%;display:block}.hood{transition:transform .7s ease,opacity .7s;transform-box:fill-box;transform-origin:50% 100%}.hood.off{transform:translateY(-90px) rotate(-14deg);opacity:0}
+.glow{animation:gl 1s infinite}@keyframes gl{50%{opacity:.4}}
+#engl{white-space:pre-line}.tabs button{font-size:11.5px!important}
 </style>
 </head>
 <body>
 <div id="app">
  <div class="top"><div class="coins"><span id="coins">0</span><small>монет</small></div><div class="sold">продано: <b id="sold">0</b></div></div>
-
  <section id="tab-fix">
-  <div class="stage"><canvas id="cv"></canvas><div class="tag"><span id="cname"></span></div></div>
+  <div class="stage" id="stage"><canvas id="cv"></canvas><div class="tag"><span id="cname"></span></div></div>
   <div class="bar"><i id="bar"></i></div>
   <div class="pct"><span id="pct"></span><span id="auto"></span></div>
-  <button class="fix" id="fix">🔧 Чинить</button>
-  <h3>Улучшения</h3>
+  <button class="fix" id="lgo">🏁 Гонка</button>
+  <button class="fix sm" id="fix">🔧 Чинить</button>
+  <h3>Улучшения ремонта</h3>
   <button class="row" id="up-tools"><div class="ic">🔧</div><div><b>Инструменты</b><em id="d-tools"></em></div><div class="pr" id="p-tools"></div></button>
   <button class="row" id="up-mech"><div class="ic">👷</div><div><b>Механики</b><em id="d-mech"></em></div><div class="pr" id="p-mech"></div></button>
   <button class="row star" id="up-star"><div class="ic">⭐</div><div><b>Мгновенный ремонт</b><em>Оплата Stars подключается позже</em></div><div class="pr">1 ⭐</div></button>
  </section>
-
+ <section id="tab-tune" class="hide">
+  <h3 style="margin-top:6px">Тюнинг</h3>
+  <div class="chips"><button class="chip on" id="m-col">🎨 Цвет</button><button class="chip" id="m-eng">⚙️ Двигатель</button></div>
+  <div id="tc"><p class="hint">Выбери цвет машины</p><div class="sw" id="sw"></div></div>
+  <div id="te" class="hide"><div id="engv"></div><p class="hint" id="engt"></p><p class="hint" id="engl"></p><button class="fix" id="engb"></button></div>
+ </section>
  <section id="tab-cases" class="hide">
   <h3 style="margin-top:6px">Кейсы с машинами</h3>
   <p class="hint">Из кейса выпадает неисправная машина: чем выше ★, тем она реже и дороже. Её можно починить и продать или отправить в гонку.</p>
   <div id="cases"></div>
  </section>
-
  <section id="tab-race" class="hide">
   <h3 style="margin-top:6px">Гонка</h3>
-  <p class="hint">Выбери отремонтированную машину и жми «Газ!» как можно чаще. Приз зависит от места и класса машины.</p>
+  <p class="hint">Выбери машину и число гонщиков (2–5), жми «Старт» и смотри: машина едет сама. Скорость зависит от редкости и исправности. Деньги — за место. После гонки машина немного ломается, чини её.</p>
+  <div class="chips" id="rn"></div>
   <div class="chips" id="rcars"></div>
-  <div id="lanes"></div>
+  <p class="hint" id="rinfo"></p>
+  <div class="trk"><div id="lanes"></div><div class="cd" id="cd"></div></div>
   <button class="fix" id="go" style="margin-top:12px">🏁 Старт</button>
  </section>
-
  <section id="tab-garage" class="hide">
   <h3 style="margin-top:6px">Мой гараж</h3>
   <p class="hint">Места: <b id="gcount"></b></p>
   <div class="grid" id="ggrid"></div>
  </section>
 </div>
-
-<div class="tabs"><button id="t1" class="on">🔧 Ремонт</button><button id="t2">🎁 Кейсы</button><button id="t3">🏁 Гонка</button><button id="t4">🚗 Гараж</button></div>
+<div class="tabs"><button id="t1" class="on">🏠 Лобби</button><button id="t2">🏁 Гонка</button><button id="t3">🛠 Тюнинг</button><button id="t4">🎁 Кейсы</button><button id="t5">🚗 Гараж</button></div>
 <div class="pop" id="pop"><div>
  <div id="pcar"></div><h2 id="ptitle"></h2><p id="ptext"></p>
  <button class="b1" id="psell"></button><button class="b2" id="psave"></button>
 </div></div>
 <div class="toast" id="toast"></div>
-
 <script>
 const tg = window.Telegram && Telegram.WebApp;
 if (tg) { try { tg.ready(); tg.expand(); tg.setHeaderColor('#0f1012'); tg.setBackgroundColor('#0f1012'); } catch(e){} }
-
-/* ---------- данные: категории -> машины [название, класс 1-5] ---------- */
 const CATS = [
- {n:'Легковые', ic:'🚘', p:600,  d:[2.6,.7,1.3,.6],  c:[['Хёндэ Солярис',1],['Лада Веста',1],['Тойота Камри',2],['Мерседес E-класс',3],['БМВ M5',4],['Майбах S-класс',5]]},
- {n:'Кроссоверы', ic:'🚙', p:900, d:[2.5,.95,1.4,.65], c:[['Рено Дастер',1],['Киа Спортейдж',2],['БМВ X5',3],['Рэндж Ровер',4],['Мерседес Гелик',5]]},
- {n:'Универсалы', ic:'🚐', p:700, d:[2.9,.75,1.9,.6],  c:[['Лада Веста SW',1],['Шкода Октавия Комби',2],['Вольво V60',3],['Ауди RS6 Avant',4],['БМВ M5 Touring',5]]},
- {n:'Хэтчбеки', ic:'🚗', p:500,   d:[2.2,.7,1.2,.65],  c:[['Лада Калина',1],['Фольксваген Гольф',2],['Хонда Сивик Type R',3],['Мерседес A45 AMG',4],['Тойота GR Yaris',5]]},
- {n:'Купе и спорткары', ic:'🏎️', p:1200, d:[2.6,.55,1,.45], c:[['Мазда MX-5',1],['Форд Мустанг',2],['Порше 911',3],['Ниссан GT-R',4],['Ламборгини Хуракан',5]]}
+ {n:'Легковые', ic:'🚘', p:600,  d:[2.6,.7,1.3,.6],  c:[['Хёндэ Солярис',1],['Лада Веста',1],['Тойота Камри',2],['Мерседес E-класс',3],['БМВ M5',4],['Майбах S-класс',5],['Роллс-Ройс Фантом',6]]},
+ {n:'Кроссоверы', ic:'🚙', p:900, d:[2.5,.95,1.4,.65], c:[['Рено Дастер',1],['Киа Спортейдж',2],['БМВ X5',3],['Рэндж Ровер',4],['Мерседес Гелик',5],['Ламборгини Урус',6]]},
+ {n:'Универсалы', ic:'🚐', p:700, d:[2.9,.75,1.9,.6],  c:[['Лада Веста SW',1],['Шкода Октавия Комби',2],['Вольво V60',3],['Ауди RS6 Avant',4],['БМВ M5 Touring',5],['Порше Тайкан Кросс Туризмо',6]]},
+ {n:'Хэтчбеки', ic:'🚗', p:500,   d:[2.2,.7,1.2,.65],  c:[['Лада Калина',1],['Фольксваген Гольф',2],['Хонда Сивик Type R',3],['Мерседес A45 AMG',4],['Тойота GR Yaris',5],['Мини Купер JCW GP',6]]},
+ {n:'Купе и спорткары', ic:'🏎️', p:1200, d:[2.6,.55,1,.45], c:[['Мазда MX-5',1],['Форд Мустанг',2],['Порше 911',3],['Ниссан GT-R',4],['Ламборгини Хуракан',5],['Бугатти Широн',6]]}
 ];
 const CARS = [];
 CATS.forEach((k, ci) => k.c.forEach(x => CARS.push({n:x[0], t:x[1], cat:ci, hp:50*x[1], cph:2*x[1], val:300*x[1]*x[1], col:'hsl(' + (CARS.length*53 % 360) + ',55%,48%)'})));
-const W = [45, 30, 15, 8, 2], SLOTS = 8, KEY = 'garazhik_v3';
-const def = {coins:1000, sold:0, power:1, auto:0, garage:[{id:1, car:0, prog:0}], active:1};
+const W = [45, 30, 15, 6, 3.5, .5], SLOTS = 8, KEY = 'garazhik_v4';
+const def = {coins:1000, sold:0, power:1, auto:0, garage:[{id:1, car:0, prog:50, ready:true}], active:1};
 let S = JSON.parse(JSON.stringify(def));
 try {
   const now = localStorage.getItem(KEY), old = JSON.parse(localStorage.getItem('garazhik_v2') || 'null');
   if (now) Object.assign(S, JSON.parse(now));
-  else if (old) { ['coins','sold','power','auto'].forEach(k => { if (typeof old[k] === 'number') S[k] = old[k]; }); localStorage.setItem(KEY, JSON.stringify(S)); }
+  else if (old) { ['coins','sold','power','auto'].forEach(k => { if (typeof old[k] === 'number') S[k] = old[k]; }); localStorage.
+   setItem(KEY, JSON.stringify(S)); }
 } catch(e){}
 function save(){ try { localStorage.setItem(KEY, JSON.stringify(S)); } catch(e){} }
 const $ = id => document.getElementById(id);
@@ -132,14 +151,17 @@ const toolsPrice = () => 60 * Math.pow(2, S.power);
 const mechPrice  = () => Math.round(480 * Math.pow(1.8, S.auto));
 const cur = () => S.garage.find(g => g.id === S.active);
 const isDone = g => g.prog >= CARS[g.car].hp;
+const can = g => g.prog >= CARS[g.car].hp * .5;
 const stars = t => '★'.repeat(t);
+const gcol = g => g.col || CARS[g.car].col;
+const ENG = [2500, 4000, 6000, 10000], COLS = ['#e53935','#f5a623','#fdd835','#43a047','#1e88e5','#8e24aa','#ec407a','#eceff1','#212121','#00acc1'];
+const RAR = ['обычная','редкая','супер редкая','эпическая','легендарная','мифическая'], DUR = [2,5,10,18,25,30];
+const left = (g, c) => Math.max(1, Math.ceil((c.hp - g.prog) / c.hp * DUR[c.t-1]));
 function svgCar(col){
-  return `<svg viewBox="0 0 120 60"><path d="M10 40 L14 28 Q16 24 22 24 L38 24 L46 12 Q48 10 52 10 L80 10 Q84 10 86 13 L94 24 L104 26 Q110 28 110 34 L110 42 Z" fill="${col}"/><path d="M50 14 L44 24 L72 24 L72 14 Z M77 14 L77 24 L90 24 L84 14 Z" fill="#0f1012" opacity=".75"/><circle cx="34" cy="44" r="10" fill="#111"/><circle cx="34" cy="44" r="4" fill="#555"/><circle cx="88" cy="44" r="10" fill="#111"/><circle cx="88" cy="44" r="4" fill="#555"/></svg>`;
+  return <svg viewBox="0 0 120 60"><path d="M10 40 L14 28 Q16 24 22 24 L38 24 L46 12 Q48 10 52 10 L80 10 Q84 10 86 13 L94 24 L104 26 Q110 28 110 34 L110 42 Z" fill="${col}"/><path d="M50 14 L44 24 L72 24 L72 14 Z M77 14 L77 24 L90 24 L84 14 Z" fill="#0f1012" opacity=".75"/><circle cx="34" cy="44" r="10" fill="#111"/><circle cx="34" cy="44" r="4" fill="#555"/><circle cx="88" cy="44" r="10" fill="#111"/><circle cx="88" cy="44" r="4" fill="#555"/></svg>;
 }
 function toast(t){ const el = $('toast'); el.textContent = t; el.classList.add('show'); clearTimeout(toast.t); toast.t = setTimeout(() => el.classList.remove('show'), 1900); }
 function buzz(k){ try { tg.HapticFeedback.impactOccurred(k || 'light'); } catch(e){} }
-
-/* ---------- 3D ---------- */
 let scene, cam, ren, car, body, cab, bodyMat, bump = 0, ok3d = false;
 function init3d(){
   try {
@@ -171,130 +193,217 @@ function loop(){
   requestAnimationFrame(loop);
   const g = cur(); if (g) {
     car.rotation.y += .007; bump *= .86; const s = 1 + bump; car.scale.set(s, s, s);
-    const c = CARS[g.car]; bodyMat.color.set(0x6a625e).lerp(new THREE.Color(c.col), Math.min(g.prog / c.hp, 1));
+    const c = CARS[g.car]; bodyMat.color.set(0x6a625e).lerp(new THREE.Color(gcol(g)), Math.min(g.prog / c.hp, 1));
   }
   ren.render(scene, cam);
 }
-
-/* ---------- окно ---------- */
 function P(o){
   $('pcar').innerHTML = o.svg; $('ptitle').textContent = o.t; $('ptext').textContent = o.x || '';
   const a = $('psell'), b = $('psave');
   a.textContent = o.a ? o.a[0] : ''; a.onclick = o.a ? o.a[1] : null;
   b.textContent = o.b ? o.b[0] : ''; b.onclick = o.b ? o.b[1] : null; b.disabled = !!(o.b && o.b[2]);
-  a.style.display = o.a ? '' : 'none'; b.style.display = o.b ? '' : 'none';
+  a.style.display = o.
+   a ? '' : 'none'; b.style.display = o.b ? '' : 'none';
   $('pop').classList.add('show');
 }
 function closeP(){ $('pop').classList.remove('show'); save(); render(); }
-
-/* ---------- ремонт (стоит монет) ---------- */
 function repair(n){
   const g = cur(); if (!g || isDone(g)) return false;
   const c = CARS[g.car]; let h = Math.min(n, c.hp - g.prog);
   if (S.coins < h * c.cph) h = Math.floor(S.coins / c.cph);
   if (h < 1) return false;
   S.coins -= h * c.cph; g.prog += h;
-  if (isDone(g)) { buzz('heavy'); P({svg:svgCar(c.col), t:c.n + ' отремонтирована', x:'Продай или оставь для гонок.',
+  if (isDone(g) && !g.ready) { g.ready = true; buzz('heavy'); P({svg:svgCar(c.col), t:c.n + ' отремонтирована', x:'Продай или оставь для гонок.',
     a:['Продать за ' + fmt(c.val), () => { sell(g.id); closeP(); }], b:['Оставить в гараже', () => { S.active = null; closeP(); }]}); }
   return true;
 }
 function floatText(txt, e){
   const b = $('fix').getBoundingClientRect(), el = document.createElement('div'); el.className = 'fl'; el.textContent = txt;
-  el.style.cssText = `position:fixed;left:${(e && e.clientX) || b.left + b.width/2}px;top:${(e && e.clientY) || b.top}px`;
+  el.style.cssText = position:fixed;left:${(e && e.clientX) || b.left + b.width/2}px;top:${(e && e.clientY) || b.top}px;
   document.body.appendChild(el); setTimeout(() => el.remove(), 700);
 }
 $('fix').addEventListener('click', e => {
-  if (!repair(S.power)) return toast('Не хватает монет — заработай в гонке');
+  if (!repair(S.power)) return toast('Не хватает монет — машина и так чинится сама');
   bump = .07; buzz('light'); floatText('🔧 +' + S.power, e); save(); render();
 });
 $('up-tools').addEventListener('click', () => { const p = toolsPrice(); if (S.coins < p) return toast('Не хватает монет'); S.coins -= p; S.power++; buzz('medium'); save(); render(); });
 $('up-mech').addEventListener('click', () => { const p = mechPrice(); if (S.coins < p) return toast('Не хватает монет'); S.coins -= p; S.auto++; buzz('medium'); save(); render(); });
 $('up-star').addEventListener('click', () => toast('Оплата Stars подключается позже'));
-
 function sell(id){
   const i = S.garage.findIndex(g => g.id === id); if (i < 0) return;
-  const g = S.garage[i], c = CARS[g.car], v = isDone(g) ? c.val : Math.round(c.val * .1);
+  const g = S.garage[i], c = CARS[g.car], v = Math.round(c.val * (.1 + .9 * g.prog / c.hp));
   S.coins += v; S.sold++; S.garage.splice(i, 1); if (S.active === id) S.active = null;
   toast('Продано за ' + fmt(v)); save();
 }
-
-/* ---------- кейсы ---------- */
 function openCase(ci){
   const k = CATS[ci];
   if (S.coins < k.p) return toast('Не хватает монет');
   if (S.garage.length >= SLOTS) return toast('Гараж полон — продай машину');
   S.coins -= k.p;
-  let r = Math.random() * 100, t = 1; for (let i = 0; i < 5; i++) { if (r < W[i]) { t = i + 1; break; } r -= W[i]; }
-  const pool = CARS.map((c, i) => i).filter(i => CARS[i].cat === ci && CARS[i].t === t);
-  const idx = pool[Math.floor(Math.random() * pool.length)], all = CARS.map((c, i) => i).filter(i => CARS[i].cat === ci);
+  let r = Math.random() * 100, t = 1; for (let i = 0; i < 6; i++) { if (r < W[i]) { t = i + 1; break; } r -= W[i]; }
+  let pool = CARS.map((c, i) => i).filter(i => CARS[i].cat === ci && CARS[i].t === t);
+  const all = CARS.map((c, i) => i).filter(i => CARS[i].cat === ci);
+  if (!pool.length) pool = all;
+  const idx = pool[Math.floor(Math.random() * pool.length)];
   const g = {id:Date.now(), car:idx, prog:0}; S.garage.push(g); if (!cur()) S.active = g.id; save(); render(); buzz('medium');
   let n = 0; const iv = setInterval(() => {
     P({svg:svgCar(CARS[all[Math.floor(Math.random() * all.length)]].col), t:'Открываем кейс…'});
     if (++n > 12) { clearInterval(iv); const c = CARS[idx]; buzz('heavy');
-      P({svg:svgCar(c.col), t:c.n + ' ' + stars(c.t), x:'Неисправна. Ремонт ' + fmt(c.hp * c.cph) + ' монет, после ремонта стоит ' + fmt(c.val) + '.',
+      P({svg:svgCar(c.col), t:c.n + ' ' + stars(c.t), x:'Редкость: ' + RAR[c.t-1] + '. Сама починится за ~' + DUR[c.t-1] + ' мин, после ремонта стоит ' + fmt(c.val) + '.',
         a:['В гараж', closeP], b:['Открыть ещё за ' + fmt(k.p), () => { closeP(); openCase(ci); }, S.coins < k.p || S.garage.length >= SLOTS]}); }
   }, 100);
 }
 $('cases').addEventListener('click', e => { const b = e.target.closest('[data-c]'); if (b) openCase(+b.dataset.c); });
-
-/* ---------- гонка ---------- */
-const R = {car:null, run:false, pos:[0,0,0,0], boost:0, iv:0};
-function lanes(){ $('lanes').innerHTML = ['Ты','Соперник 1','Соперник 2','Соперник 3'].map((n, i) => `<div class="ln"><span>${i ? 'Соп. ' + i : n}</span><div class="bar"><i style="width:${R.pos[i]}%"></i></div></div>`).join(''); }
+const R = {car:null, run:false, n:3, rs:[], fin:[], iv:0};
+const pw = (t, cond) => (.55 + .09 * t) * (.55 + .45 * cond);
+function buildLanes(rs){
+  $('lanes').innerHTML = rs.map((x, i) => `<div class="lane ${i ? '' : 'me'}"><div class="nm"><b>${i + 1}</b> ${x.n}</div><div class="cr" style="left:0">${svgCar(x.col)}<i></i></div><div class="fin"></div></div>`).join('');
+}
+function idleLanes(){
+  const g = S.garage.find(x => x.id === R.car), rs = [{n: g ? 'Ты · ' + CARS[g.car].n : 'Твоя машина', col: g ? gcol(g) : '#555'}];
+  for (let i = 1; i < R.n; i++) rs.push({n:'Соперник ' + i, col:'#4a4d55'});
+  buildLanes(rs);
+}
+function updLanes(){
+  const order = R.rs.map((x, i) => i).
+   sort((a, b) => R.rs[b].p - R.rs[a].p), ls = $('lanes').children;
+  R.rs.forEach((x, i) => { const l = ls[i]; if (!l) return;
+    l.children[1].style.left = 'calc((100% - 74px) * ' + Math.min(x.p, 100) / 100 + ')';
+    const f = R.fin.indexOf(i); l.children[0].firstElementChild.textContent = (f >= 0 ? f : order.indexOf(i)) + 1; });
+}
 function startRace(){
+  if (R.run) return;
   const g = S.garage.find(x => x.id === R.car);
-  if (!g || !isDone(g)) return toast('Выбери отремонтированную машину');
-  R.run = true; R.pos = [0,0,0,0]; R.boost = 0; R.t = CARS[g.car].t; $('go').textContent = '🔥 Газ!'; render();
+  if (!g || !can(g)) return toast('Нужна машина с исправностью от 50%');
+  const c = CARS[g.car], cond = g.prog / c.hp;
+  R.run = true; R.fin = []; $('go').disabled = true; $('go').textContent = 'Заезд идёт…';
+  R.rs = [{n:'Ты · ' + c.n, col:gcol(g), pw:pw(c.t, cond) * (1 + .1 * (g.eng || 0)), p:0, l:1}];
+  for (let i = 1; i < R.n; i++) {
+    const t = Math.min(6, Math.max(1, c.t + [-1, 0, 0, 1][Math.floor(Math.random() * 4)])), pool = CARS.filter(x => x.t === t), b = pool[Math.floor(Math.random() * pool.length)];
+    R.rs.push({n:b.n, col:b.col, pw:pw(t, .75 + Math.random() * .25), p:0, l:1});
+  }
+  buildLanes(R.rs); updLanes();
+  const cd = $('cd'); let k = 3; cd.textContent = k; cd.classList.add('show'); buzz('light');
+  const ci = setInterval(() => { k--; if (k > 0) { cd.textContent = k; buzz('light'); } else { clearInterval(ci); cd.textContent = 'GO!'; setTimeout(() => cd.classList.remove('show'), 450); go(g, c); } }, 700);
+}
+function go(g, c){
+  [...$('lanes').children].forEach(l => l.classList.add('run')); buzz('heavy');
   R.iv = setInterval(() => {
-    const p = R.pos; p[0] += (.3 + .12 * R.t + R.boost) * .5; R.boost *= .9;
-    for (let i = 1; i < 4; i++) p[i] += (.55 + .08 * R.t + Math.random() * .5 + i * .03) * .5;
-    lanes();
-    if (p.some(v => v >= 100)) {
-      clearInterval(R.iv); R.run = false; $('go').textContent = '🏁 Старт';
-      const place = 1 + p.slice(1).filter(v => v > p[0]).length, prize = Math.round((120 * R.t + 80) * [1, .5, .25, .1][place - 1]);
-      S.coins += prize; save(); toast(place + ' место: +' + fmt(prize) + ' монет'); render();
-    }
+    const ni = [];
+    R.rs.forEach((x, i) => { if (x.p >= 100) return;
+      if (Math.random() < .04) x.l = .85 + Math.random() * .3;
+      x.p += x.pw * .4 * x.l * (.9 + Math.random() * .2);
+      if (x.p >= 100) ni.push({i, p:x.p}); });
+    ni.sort((a, b) => b.p - a.p).forEach(o => { R.fin.push(o.i); R.rs[o.i].p = 100; $('lanes').children[o.i].classList.remove('run'); });
+    updLanes();
+    if (R.fin.length === R.n) finish(g, c);
   }, 50);
 }
-$('go').addEventListener('click', () => { if (!R.run) startRace(); else { R.boost = Math.min(R.boost + .5, 3.5); buzz('light'); } });
-$('rcars').addEventListener('click', e => { const b = e.target.closest('[data-r]'); if (b && !R.run) { R.car = +b.dataset.r; render(); } });
-
-/* ---------- гараж ---------- */
+function finish(g, c){
+  clearInterval(R.iv); R.run = false; $('go').disabled = false; $('go').textContent = '🏁 Старт';
+  const place = R.fin.indexOf(0) + 1, prize = Math.round((120 * c.t + 80) * (.6 + .2 * R.n) * [1, .5, .25, .1, .05][place - 1]);
+  g.prog = Math.max(0, g.prog - Math.round(c.hp * (.07 + Math.random() * .07)));
+  S.coins += prize; save(); buzz('heavy');
+  P({svg:svgCar(c.col), t:['🥇','🥈','🥉','4️⃣','5️⃣'][place - 1] + ' ' + place + ' место',
+    x:R.fin.map((i, k) => (k + 1) + '. ' + R.rs[i].n).join('\n') + '\n\n+' + fmt(prize) + ' монет · исправность ' + Math.floor(g.prog / c.hp * 100) + '%',
+    a:['Ок', closeP], b:['Ещё заезд', () => { closeP(); startRace(); }, !can(g)]});
+  render();
+}
+$('rn').addEventListener('click', e => { const b = e.target.closest('[data-n]'); if (b && !R.run) { R.n = +b.dataset.n; render(); } });
+$('go').addEventListener('click', startRace);
+$('rcars').addEventListener('click', e => { const b = e.target.closest('[data-r]'); if (b && !R.run) { R.car = +b.dataset.r; S.active = R.car; render(); } });
 $('ggrid').addEventListener('click', e => {
   const b = e.target.closest('[data-act]'); if (!b) return; const id = +b.dataset.id;
   if (b.dataset.act === 'fix') { S.active = id; save(); render(); tab(1); }
-  if (b.dataset.act === 'race') { R.car = id; render(); tab(3); }
+  if (b.dataset.act === 'race') { R.car = id; S.active = id; render(); tab(2); }
   if (b.dataset.act === 'sell') { sell(id); render(); }
 });
-
-/* ---------- интерфейс ---------- */
 function render(){
+  if (!cur() && S.garage.length) S.active = S.garage[0].id;
   const g = cur(), c = g && CARS[g.car];
   $('coins').textContent = fmt(S.coins); $('sold').textContent = S.sold;
-  $('cname').innerHTML = c ? c.n + ' ' + stars(c.t) + '<span>' + (isDone(g) ? 'готова — продай или в гонку' : 'ремонт: ' + c.cph + ' монет за ед.') + '</span>' : 'Нет машины в работе<span>выбери в гараже или открой кейс</span>';
+  $('cname').innerHTML = c ? c.n + ' ' + stars(c.t) + '<span>' + (isDone(g) ? 'готова — продай или в гонку' : 'чинится сама, ещё ~' + left(g, c) + ' мин') + '</span>' : 'Нет машины в работе<span>выбери в гараже или открой кейс</span>';
   const pr = c ? Math.min(100, Math.floor(g.prog / c.hp * 100)) : 0;
   $('bar').style.width = pr + '%'; $('pct').textContent = c ? pr + '% отремонтировано' : '';
   $('auto').textContent = S.auto ? 'механики: ' + S.auto + ' ед/сек' : '';
   $('fix').disabled = !c || isDone(g);
-  $('fix').textContent = '🔧 Чинить (+' + S.power + (c ? ', −' + fmt(S.power * c.cph) : '') + ')';
+  $('fix').
+   textContent = '🔧 Чинить (+' + S.power + (c ? ', −' + fmt(S.power * c.cph) : '') + ')';
   $('d-tools').textContent = '+1 к ремонту за клик (сейчас ' + S.power + ')'; $('p-tools').textContent = fmt(toolsPrice());
   $('d-mech').textContent = 'Чинят сами: ' + S.auto + ' ед/сек'; $('p-mech').textContent = fmt(mechPrice());
   $('up-tools').classList.toggle('off', S.coins < toolsPrice()); $('up-mech').classList.toggle('off', S.coins < mechPrice());
   $('cases').innerHTML = CATS.map((k, i) => `<button class="row ${S.coins < k.p ? 'off' : ''}" data-c="${i}"><div class="ic">${k.ic}</div><div><b>${k.n}</b><em>${k.c.map(x => x[0]).join(' · ')}</em></div><div class="pr">${fmt(k.p)}</div></button>`).join('');
-  const rd = S.garage.filter(isDone); if (!rd.find(x => x.id === R.car)) R.car = rd.length ? rd[0].id : null;
-  $('rcars').innerHTML = rd.length ? rd.map(x => `<button class="chip ${x.id === R.car ? 'on' : ''}" data-r="${x.id}">${CARS[x.car].n} ${stars(CARS[x.car].t)}</button>`).join('') : '<span class="hint">Пока нет отремонтированных машин — почини одну в гараже.</span>';
-  if (!R.run) lanes();
+  $('rn').innerHTML = [2,3,4,5].map(n => `<button class="chip ${n === R.n ? 'on' : ''}" data-n="${n}">${n} гонщика</button>`).join('');
+  const rd = S.garage.filter(can); if (!rd.find(x => x.id === R.car)) R.car = rd.length ? rd[0].id : null;
+  $('rcars').innerHTML = rd.length ? rd.map(x => `<button class="chip ${x.id === R.car ? 'on' : ''}" data-r="${x.id}">${CARS[x.car].n} ${stars(CARS[x.car].t)} · ${Math.floor(x.prog / CARS[x.car].hp * 100)}%</button>`).join('') : '<span class="hint">Нет машин с исправностью от 50% — почини одну.</span>';
+  const rg = S.garage.find(x => x.id === R.car), rc = rg && CARS[rg.car];
+  $('rinfo').textContent = rc ? rc.n + ' ' + stars(rc.t) + ' · ' + RAR[rc.t-1] + ' · исправность ' + Math.floor(rg.prog / rc.hp * 100) + '% · мощность ' + Math.round(pw(rc.t, rg.prog / rc.hp) * (1 + .1 * (rg.eng || 0)) * 100) : 'Выбери машину для гонки';
+  if (!R.run) idleLanes();
   $('gcount').textContent = S.garage.length + ' / ' + SLOTS;
-  let h = S.garage.map(x => { const k = CARS[x.car], d = isDone(x), v = d ? k.val : Math.round(k.val * .1);
-    return `<div class="slot ${x.id === S.active ? 'act' : ''}">${svgCar(k.col)}<b>${k.n}</b><div class="s">${CATS[k.cat].n} · ${stars(k.t)} · ${d ? 'на ходу' : Math.floor(x.prog / k.hp * 100) + '%'}</div><div class="r"><button data-act="${d ? 'race' : 'fix'}" data-id="${x.id}">${d ? 'В гонку' : 'Чинить'}</button><button data-act="sell" data-id="${x.id}">${fmt(v)} 🪙</button></div></div>`; }).join('');
+  let h = S.garage.map(x => { const k = CARS[x.car], full = isDone(x), cp = x.prog / k.hp, v = Math.round(k.val * (.1 + .9 * cp));
+    return <div class="slot ${x.id === S.active ? 'act' : ''}">${svgCar(gcol(x))}<b>${k.n}</b><div class="s">${RAR[k.t-1]} · ${stars(k.t)}</div><div class="s">${Math.floor(cp * 100)}% · ${can(x) ? 'на ходу' : 'не едет'}${full ? '' : ' · ~' + left(x, k) + ' мин'}</div><div class="r">${can(x) ? `<button data-act="race" data-id="${x.id}">В гонку</button> : ''}${full ? '' : <button data-act="fix" data-id="${x.id}">Чинить</button>`}</div><div class="r"><button data-act="sell" data-id="${x.id}">${fmt(v)} 🪙</button></div></div>; }).join('');
   for (let i = S.garage.length; i < SLOTS; i++) h += '<div class="slot empty">Свободное место</div>';
-  $('ggrid').innerHTML = h; apply3d();
+  $('ggrid').innerHTML = h; apply3d(); tuneUI();
 }
+function engSvg(lv, col){
+  return `<svg class="eng" viewBox="0 0 300 190"><rect x="10" y="10" width="280" height="170" rx="22" fill="${col}"/><rect x="30" y="22" width="240" height="30" rx="8" fill="#0f1012" opacity=".8"/><rect x="26" y="62" width="248" height="112" rx="14" fill="#111317"/>
+${lv >= 4 ? '<ellipse class="glow" cx="150" cy="118" rx="115" ry="48" fill="#ff6a00" opacity=".3"/>' : ''}
+<rect x="95" y="80" width="110" height="70" rx="8" fill="${lv >= 4 ? '#e6ebf3' : lv >= 2 ? '#cfd3da' : '#a9acb2'}"/>
+${[115,140,165,190].map(x => `<circle cx="${x}" cy="96" r="9" fill="${lv >= 3 ? '#d11f2a' : '#333'}"/>`).join('')}
+<rect x="95" y="124" width="110" height="26" rx="6" fill="${lv >= 3 ? '#b3121c' : '#2a2c31'}"/>
+${lv >= 1 ? '<rect x="44" y="84" width="36" height="52" rx="10" fill="#2f6fe0"/><rect x="44" y="130" width="36" height="9" rx="3" fill="#111"/>' : ''}
+${lv >= 2 ? '<circle cx="230" cy="98" r="19" fill="#8d939e"/><circle cx="230" cy="98" r="8" fill="#333"/>' : ''}
+${lv >= 3 ? '<path d="M205 110 H224 V146 H245" stroke="#f5a623" stroke-width="6" fill="none"/>' : ''}
+${lv >= 4 ? '<rect x="250" y="130" width="18" height="30" rx="5" fill="#ffcc66"/><path d="M100 76 H200" stroke="#ffcc66" stroke-width="4"/>' : ''}
+<g class="hood"><rect x="22" y="58" width="256" height="120" rx="16" fill="${col}" stroke="#0005" stroke-width="3"/><rect x="40" y="80" width="220" height="12" rx="6" fill="#fff" opacity=".2"/></g></svg>`;
+}
+function drawEng(){
+  const g = cur(); if (!g) return;
+  $('engv').innerHTML = engSvg(g.eng || 0, gcol(g));
+  setTimeout(() => { const h = $('engv').
+   querySelector('.hood'); if (h) h.classList.add('off'); }, 350);
+}
+let TM = 'col', curTab = 1;
+function setTM(m){
+  TM = m; $('m-col').classList.toggle('on', m === 'col'); $('m-eng').classList.toggle('on', m === 'eng');
+  $('tc').classList.toggle('hide', m !== 'col'); $('te').classList.toggle('hide', m !== 'eng');
+  $('stage').classList.toggle('hide', m === 'eng' && curTab === 3);
+  if (m === 'eng') drawEng();
+}
+function tuneUI(){
+  const g = cur(); if (!g) return; const lv = g.eng || 0, col = gcol(g), b = $('engb');
+  [...$('sw').children].forEach(x => x.classList.toggle('on', x.dataset.c === col));
+  $('engt').textContent = CARS[g.car].n + ' · двигатель ' + lv + ' ур. · скорость в гонке +' + lv * 10 + '%';
+  $('engl').textContent = ENG.map((p, i) => (i < lv ? '✅ ' : '▫️ ') + (i + 1) + ' ур — ' + fmt(p) + ' 🪙 · +' + (i + 1) * 10 + '%').join('\n');
+  b.disabled = lv >= 4 || S.coins < ENG[lv]; b.textContent = lv >= 4 ? 'Максимальный уровень' : 'Улучшить до ' + (lv + 1) + ' ур. · ' + fmt(ENG[lv]) + ' 🪙';
+}
+$('sw').innerHTML = COLS.map(c => `<button data-c="${c}" style="background:${c}"></button>`).join('');
+$('sw').addEventListener('click', e => { const b = e.target.closest('[data-c]'), g = cur(); if (b && g) { g.col = b.dataset.c; save(); render(); } });
+$('m-col').addEventListener('click', () => setTM('col')); $('m-eng').addEventListener('click', () => setTM('eng'));
+$('engb').addEventListener('click', () => { const g = cur(); if (!g) return; const lv = g.eng || 0;
+  if (lv >= 4 || S.coins < ENG[lv]) return; S.coins -= ENG[lv]; g.eng = lv + 1; buzz('heavy'); save(); render(); drawEng(); toast('Двигатель ' + g.eng + ' ур.'); });
+$('lgo').addEventListener('click', () => { const g = cur(); if (g && can(g)) R.car = g.id; tab(2); });
 function tab(n){
-  ['tab-fix','tab-cases','tab-race','tab-garage'].forEach((id, i) => { $(id).classList.toggle('hide', i + 1 !== n); $('t' + (i + 1)).classList.toggle('on', i + 1 === n); });
+  curTab = n;
+  ['tab-fix','tab-race','tab-tune','tab-cases','tab-garage'].forEach((id, i) => { $(id).classList.toggle('hide', i + 1 !== n); $('t' + (i + 1)).classList.toggle('on', i + 1 === n); });
+  $('stage').classList.remove('hide');
+  if (n === 1 || n === 3) $(n === 1 ? 'tab-fix' : 'tab-tune').prepend($('stage'));
+  if (n === 3) setTM(TM);
   window.scrollTo(0, 0);
 }
-[1,2,3,4].forEach(n => $('t' + n).addEventListener('click', () => tab(n)));
-setInterval(() => { if (S.auto > 0 && repair(S.auto)) { save(); render(); } }, 1000);
+[1,2,3,4,5].forEach(n => $('t' + n).addEventListener('click', () => tab(n)));
+function tickAuto(){
+  const now = Date.now(), dt = Math.min((now - (S.last || now)) / 1000, 21600); S.last = now;
+  S.garage.forEach(g => { if (isDone(g)) return; const c = CARS[g.car];
+    g.prog = Math.min(c.hp, g.prog + c.hp / (DUR[c.t-1] * 60) * dt);
+    if (isDone(g) && !g.ready) { g.ready = true; buzz('heavy');
+      if (g.id === S.active) P({svg:svgCar(c.col), t:c.n + ' починилась', x:'Продай или оставь для гонок.',
+        a:['Продать за ' + fmt(c.val), () => { sell(g.id); closeP(); }], b:['Оставить в гараже', () => { S.active = null; closeP(); }]});
+      else toast(c.n + ' починилась'); } });
+  save(); render();
+}
+setInterval(() => { if (S.auto > 0) repair(S.auto); tickAuto(); }, 1000);
+tickAuto();
 render(); init3d();
 </script>
 </body>
